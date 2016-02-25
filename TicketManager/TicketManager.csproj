@@ -20,6 +20,7 @@
     <IISExpressAnonymousAuthentication>disabled</IISExpressAnonymousAuthentication>
     <IISExpressWindowsAuthentication>enabled</IISExpressWindowsAuthentication>
     <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -160,6 +161,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Calendar.cs" />
     <Compile Include="Controllers\ADController.cs" />
+    <Compile Include="Controllers\ApiController.cs" />
     <Compile Include="Controllers\BirthdaysController.cs" />
     <Compile Include="Controllers\CurrentJobsController.cs" />
     <Compile Include="Controllers\DomainEditorController.cs" />
@@ -635,6 +637,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="ExchangeFiles\Temp\" />
+    <Folder Include="Views\Api\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BusinessLogic\BusinessLogic.csproj">

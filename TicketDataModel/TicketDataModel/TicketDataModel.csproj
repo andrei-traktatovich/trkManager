@@ -115,6 +115,7 @@
     <Compile Include="ExpensesReport_Result.cs">
       <DependentUpon>TicketEntities.tt</DependentUpon>
     </Compile>
+    <Compile Include="IIdName.cs" />
     <Compile Include="Indebtedness.cs" />
     <Compile Include="InternalDomain.cs">
       <DependentUpon>TicketEntities.tt</DependentUpon>
