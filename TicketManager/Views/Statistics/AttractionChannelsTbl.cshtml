@@ -1,0 +1,43 @@
+﻿@model List<IGrouping<string, TicketDataModel.Job>>
+
+@{
+    float totalJobs = Model.Sum(x => x.Count());
+  float totalRevenue = Model.Sum(x => x.Sum(y => (float)(y.DiscountedAmount ?? 0.0)));
+  float totalVolume = Model.Sum(x => x.Sum(y => (float)(y.FinalPagesCountForCustomer ?? 0.0)));
+}
+
+<table id="@ViewData["TableID"]" style="width: 95%;">
+    <thead>
+        <tr>
+            <th style="width: 200px;">Канал привлечения</th>
+            <th style="width: 100px;" class="charted">Количество заказов</th>
+            <th style="width: 100px;">% заказов</th>
+            <th style="width: 150px;" class="charted">Выручка</th>
+            <th style="width: 100px;">% выручки</th>
+            <th style="width: 150px;" class="charted">Объем</th>
+            <th style="width: 100px;">% объема</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var group in Model)
+        {
+            var jobsByCustomer = group.GroupBy(x=>x.Customer.Name).ToList();
+            <tr class="info">
+                <td><a href="#" onclick='toggleVisible(this); return false;'>@group.Key</a></td> 
+                <td>@group.Count()</td>
+                <td>@(Math.Round(group.Count() / totalJobs * 100, 1))</td>
+                <td>@{var revenue = group.Sum(x => x.DiscountedAmount);}
+                    @(revenue.Value.ToString("C"))
+                </td>
+                <td>@(Math.Round(revenue.Value / totalRevenue * 100, 1))</td>
+                <td>@{var volume = Math.Round(group.Sum(x => x.FinalPagesCountForCustomer ?? 0), 1);}@volume</td>
+                <td>@(Math.Round(volume / totalVolume * 100, 1))</td>
+            </tr>
+            <tr style="display: none;">
+                <td colspan="7">
+                    @Html.Partial("JobsByCustomer", jobsByCustomer)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

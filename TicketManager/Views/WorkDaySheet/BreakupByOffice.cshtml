@@ -1,0 +1,47 @@
+﻿@model TicketManager.Models.WorkDaySheet.BreakupByOffice
+
+<link href="~/Content/fixed-header-table.css" rel="stylesheet" />
+<h4>@Model.Name</h4>
+<p>C @(Model.StartDate.Date.ToString("dd.MM.yy")) по @(Model.EndDate.Date.ToString("dd.MM.yy"))</p>
+
+<section class="fixed-header-table">
+    <div class="table-container">
+        <table class="table table-condensed table-bordered text-center" style="font-size: small">
+            <thead>
+                <tr class="header">
+                    <th>Имя</th>
+                    <th>Всего</th>
+                    @foreach (var office in Model.Offices)
+                    {
+                        <th style="vertical-align: central; text-align: center">@office</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+
+
+                @foreach (var line in Model.Lines)
+                {
+                    <tr>
+                        <td>@line.Name</td>
+                        <td>@line.Total</td>
+                        @foreach (var office in Model.Offices)
+                        {
+                            if (line.Lines.ContainsKey(office))
+                            {
+                            <td class="bg-info">
+                                @line.Lines[office]
+                            </td>
+                            }
+                            else
+                            {
+                            <td></td>
+                            }
+
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>

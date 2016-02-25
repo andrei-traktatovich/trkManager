@@ -1,0 +1,36 @@
+﻿@model System.Web.Mvc.HandleErrorInfo
+
+@{
+    Layout = null;
+    ViewBag.Title = "Error";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Ошибка</title>
+</head>
+<body>
+    <table border="0">
+        <tr>
+            <td>
+                <img src="~/Images/doctor_error.jpg" />
+            </td>
+            <td>
+                <h1>Ошибка...</h1>
+                <h2>Произошла какая-то ошибка.</h2>
+                <hr />
+                <ul>
+                    <li>@Model.ControllerName/@Model.ActionName</li>
+                    <li>сообщение: @Model.Exception.Message</li>
+                    <li>стек: @Model.Exception.StackTrace</li>
+                </ul>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+
+
+
+

@@ -1,0 +1,5 @@
+﻿@model IEnumerable<TicketDataModel.Translator>
+@if (Model.Count() > 0)
+{
+    @Html.DropDownList(ViewData["ID"].ToString(), new SelectList(Model, "TranslatorID", "Name"))
+}

@@ -1,0 +1,117 @@
+﻿@{
+    ViewBag.Title = "Отметки об изменениях статусов и занятости";
+}
+
+<div class="container">
+    <h2>Отметки об изменениях статусов и занятости</h2>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-info">
+                <div class="panel-body">
+                    <ul class="list-group list-inline">
+                        <li class="list-group-item">
+                            Офис @Html.DropDownList("DrDnOffices")</li>
+                        <li class="list-group-item">
+                            № заказа <input type ="text" id="jobName" /></li>
+                        <li class="list-group-item">За период с&nbsp;@Html.TextBox("TxtStartDate", ViewData["StartDate"], new { @class = "easyui-datebox date-picker", data_options = "formatter:russianFormatter,parser:datetimeParser" })&nbsp;по
+        @Html.TextBox("TxtEndDate", ViewData["EndDate"], new { @class = "easyui-datebox date-picker", data_options = "formatter:russianFormatter,parser:datetimeParser" })
+                        </li>
+                        
+                        @*<li class="list-group-item">
+                            <span>Языковая пара @Html.DropDownList("languageName")</span>
+
+                        </li>*@
+                        
+                        <li class="list-group-item" style="text-align: right">
+                            <button class="btn btn-primary" onclick="loadResults();">Поиск</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class ="col-md-12">
+            <div id="results">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Дата</th>
+                        <th>Переводчик</th>
+                        <th>Заказ</th>
+                        <th>Результат</th>
+                        <th>Установлен статус</th>
+                        <th>До</th>
+                        <th>Комментарий к статусу</th>
+                        <th>Менеджер</th>
+                        <th>Офис</th>
+                    </tr>
+                    </thead>
+                    <tbody data-bind="foreach: items">
+                        <tr>
+                            <td data-bind="text: ContactDate"></td>
+                            <td data-bind="text: CalleeName"></td>
+                            <td data-bind="text: JobName"></td>
+                            <td data-bind="text: ContactResult"></td>
+                            <td data-bind="text: Status"></td>
+                            <td data-bind="text: StatusEndDate"></td>
+                            <td data-bind="text: StatusComment"></td>
+                            <td data-bind="text: Caller"></td>
+                            <td data-bind="text: Office"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var bound = false;
+
+    var getReportURL = '@Url.Content(Url.Action("GetStatusAndBusyReport"))';
+    var vm = {};
+     
+
+    function loadResults() {
+        
+        
+        var data = {
+            officeID: $('#DrDnOffices').val(), jobName: $('#jobName').val(),
+            startDate: $('#TxtStartDate').datebox('getValue'), endDate: $('#TxtEndDate').datebox('getValue')
+        };
+        console.dir(data);
+        getData(getReportURL, data);
+    }
+
+    function getData(url, data) {
+        $.ajax({ url: url, data: data, type: "GET", success: success }).fail(fail);
+    }
+
+    function fail(data, textStatus, jqXHR) { console.log('fail'); console.dir(textStatus); }
+
+    function success(data, textStatus, jqXHR) {
+        console.dir(data);
+        displayResults(data);
+    }
+
+    function displayResults(model) {
+        if (!bound) {
+             
+            console.log('model = ');
+            console.dir(model);
+            vm = ko.mapping.fromJS(model);
+         
+            ko.applyBindings(vm, document.getElementById('results'));
+            bound = true;
+        }
+        else {
+     
+            ko.mapping.fromJS(model, vm);
+        }
+         
+    }
+</script>

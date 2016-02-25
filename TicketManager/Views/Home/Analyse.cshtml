@@ -1,0 +1,150 @@
+﻿@model IEnumerable<TicketDataModel.Translator>
+@{
+    ViewBag.Title = "Аналитика";
+}
+
+<h2>Анализ</h2>
+@using(Html.BeginForm()) {
+<p>Переводчики, внесенные в базу в период с @Html.TextBox("startDate") до @Html.TextBox("endDate")</p>
+    @Html.DropDownList("searchStaffStatus")
+    @Html.DropDownList("searchTitle")
+<input type="submit" value="Искать"/>
+
+}
+@if (Model != null)
+{
+    <div class="analytical-table float-left">
+    <table>
+        <tr>
+            <th>Подразделение</th>
+            <th>Количество</th>
+        </tr>
+        @{var groupsByOffice = Model.GroupBy(x => x.OfficeID);
+          foreach (var group in groupsByOffice)
+          {
+              <tr>
+                  <td>@group.Select(x=>x.Office.Name).First()</td>
+                  <td>@group.Count()</td>
+              </tr>
+        }
+        }
+    </table>
+        <p>Общее количество: @Model.Count()</p>
+    </div>
+    <div class="analytical-table float-left">
+    <table>
+        <tr>
+            <th>Кто внес</th>
+            <th>Количество</th>
+        </tr>
+        @{var groupsByAuthor = Model.GroupBy(x => x.Izm_Isp);
+          foreach (var group in groupsByAuthor)
+          {
+              <tr>
+                  <td>@group.Select(x => x.Izm_Isp).First()</td>
+                  <td>@group.Count()</td>
+              </tr>
+          }
+        }
+    </table>
+    </div>
+    <div class="analytical-table float-left">
+    <table>
+        <tr>
+            <th>Статус</th>
+            <th>Количество</th>
+        </tr>
+        @{var groupsByActive = Model.GroupBy(x => x.active);
+          foreach (var group in groupsByActive)
+          {
+              <tr>
+                  <td>@group.Select(x => x.active).First()</td>
+                  <td>@group.Count()</td>
+              </tr>
+          }
+        }
+    </table>
+    </div>
+    <div class="clear-float"></div>
+    <table>
+        <tr>
+            <th>Имя</th>
+            <th>Подразделение</th>
+            <th>Статус</th>
+            <th>Заказы с момента внесения</th>
+            <th>Дата внесения</th>
+            <th>Кем создано</th>
+        </tr>
+    @foreach (var t in Model)
+    {
+        <tr>
+            <td>@t.Name</td>
+            <td>@t.Office.Name</td>
+            <td>@t.active</td>
+            <td>@{var jobs = t.JobParticipants.Where(jp => jp.TranslatorID == t.TranslatorID);
+                  <span>@jobs.Count()</span>
+                  if(jobs.Count() > 0)
+                  {
+                      <a href="#" class="expandLink">Подробно</a>
+                      <div class="invisible analytical-table" style="position: absolute;">
+                          <h3>@t.Name</h3>
+                          <p>Заказы за период</p>
+                      <table>
+                          <tr>
+                              <th>№</th>
+                              <th>направление</th>
+                              <th>Вид работ</th>
+                              <th>Тематики</th>
+                              <th>Дата выполнения</th>
+                              <th>Менеджер</th>
+                          </tr>
+                          @foreach(var j in jobs)
+                          {
+                          <tr>
+                              <td>@Html.ActionLink(@j.JobName, actionName: "Details", controllerName: "Job", routeValues: new { id = j.Job.ID }, htmlAttributes: null)</td>
+                              
+                              <td>@j.LanguageDirection.Name</td>
+                              <td>@j.JobType.Name</td>
+                              <td>@j.Job.MainDomain.Name&nbsp;@j.Job.SecondaryDomain.Name</td>&nbsp;
+                              <td>@j.EndDate</td>
+                              <td>@j.CreatedBy</td>
+                          </tr>
+                          }
+                          <tr>
+                              <td colspan="3">
+                                    <a href="#" onclick="return hideLink(this);">Закрыть</a></td></tr>
+                      </table>
+                      </div>
+                  }
+                      
+                }
+            </td>
+            <td>@t.CreationDate.ToString("dd.MM.yy")</td>
+            <td>@t.Izm_Isp</td>
+        </tr>
+    }
+    </table>
+}
+else
+{
+    <p>Никого не найдено</p>
+}
+<script>
+    function pageLocalSettings() {
+        $('#startDate').datepicker();
+        $('#endDate').datepicker();
+        $('.expandLink').click(function () { return toggleNeighborTable(this);});
+    }
+    function toggleNeighborTable(el) {
+        var div = $(el).siblings('div');
+        $(el).toggleClass('invisible');
+        $(div).slideDown();
+        return false; 
+    }
+    function hideLink(el) {
+        var div = $(el).closest('div');
+        $(div).hide('slow');
+        $(div).siblings('a').toggleClass('invisible');
+        return false;
+    }
+</script>

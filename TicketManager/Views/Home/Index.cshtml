@@ -1,0 +1,178 @@
+﻿@{
+    ViewBag.Title = "Заявки";
+}
+<script>
+    var ticketSearchResultsURL = '@Url.Content(Url.Action("TicketSearchResults"))';
+</script>
+<div>
+    
+
+        @using (Ajax.BeginForm("TicketSearchResults",
+    new AjaxOptions()
+    {
+        LoadingElementId = "progress",
+        InsertionMode = InsertionMode.Replace,
+        UpdateTargetId = "TicketSearchResults",
+        OnSuccess = "wireUpTicketsTable", 
+        OnFailure = "ticketSearchAjaxError"
+    }))
+        {
+            @Html.ValidationSummary(true)
+
+            <fieldset>
+                <legend>Фильтры</legend>
+                <div class="float-left border-right search-criteria-panel">
+                    <div class="search-criteria-block">
+                        <span>Показывать заявки из подразделений:
+                            @Html.DropDownList("StrOfficeID", (IEnumerable<SelectListItem>)ViewData["SubdivisionFilter"])
+                        </span>&nbsp;|&nbsp;
+
+                    @if ((bool)ViewData["canSeeAll"])
+                    {
+                        <span>Показывать заявки в подразделения: 
+                        @Html.DropDownList("StrTargetOfficeID", (IEnumerable<SelectListItem>)ViewData["SubdivisionFilter"])
+                            &nbsp;|&nbsp;
+                        </span>
+                    }
+                        Фамилия автора содержит: @Html.TextBox("StrAuthorName")
+                    </div>
+                    <div class="search-criteria-block">
+                        Адресаты и отправители:&nbsp;
+                    @Html.DropDownList("DrDnShowMode", (SelectList)ViewData["ShowSelectOptionsList"])
+                        <div id="request-search-parameters" class="inline">@Html.CheckBox("ChkOpen") Открытые | @Html.CheckBox("ChkInProgress") В работе |  
+                        @Html.CheckBox("ChkClosed") Закрытые |  @Html.CheckBox("ChkRejected") Отклоненные | @Html.CheckBox("ChkConfirmed") Исполнение подтверждено
+                        </div>
+                    </div>
+
+                    <div class="search-criteria-block inline" id="pick-date-for-request">
+                        За период с&nbsp;@Html.TextBox("TxtStartDate", ViewData["StartDate"], new { @class = "easyui-datebox date-picker", data_options = "formatter:russianFormatter,parser:datetimeParser" })&nbsp;по
+        @Html.TextBox("TxtEndDate", ViewData["EndDate"], new { @class = "easyui-datebox date-picker", data_options = "formatter:russianFormatter,parser:datetimeParser" })
+                    </div>
+                </div>
+                <div class="float-left centered">
+                    &nbsp; &nbsp;<input type="submit" id="search-button" class="search-button" value=" Фильтровать" />
+                </div>
+            </fieldset>
+    
+        
+        }
+    </div>
+    <div>
+        <p>
+            @TempData["message"]
+        </p>
+        <h2>@Html.ActionLink("Создать новую заявку", "Create")</h2>
+         
+        <div id="TicketSearchResults">
+            
+        </div>
+        <div id="TicketReportTable">
+            <table id="TicketReport" style="width: 0px; position: absolute; top: 100px;left: 0px; margin-left: -1000px;">
+
+            </table>
+        </div>
+    
+</div>
+<div id="popup" title="Описание заявки" class="ticket-popup easyui-dialog" data-options="closed: true, collapsible: false">
+    <p id="fulldescription">Нет данных</p>
+</div>
+
+<!-- scripts -->
+<script>
+
+    function doPageSettings() {
+        setToolTip("StrOfficeID");
+        setToolTip("StrTargetOfficeID");
+        setToolTip("StrAuthorName");
+        setToolTip("request-search-parameters");
+        setToolTip("DrDnShowMode");
+        setToolTip("pick-dates-for-request");
+    }
+
+    function ticketSearchAjaxError() {
+        showMessage('Произошла ошибка при загрузке таблицы заявок ...');
+    }
+
+    function makeTicketReport() {
+    
+        $('#TicketReport').treegrid({
+            url:'Url.Content(Url.Action("TicketReport"))',  
+            idField:'id',  
+            treeField:'Level',  
+            columns:[[  
+                
+                { title: 'level', field: 'Level', width: 180 },
+                { title: 'Тип', field: 'Type', width: 180 },
+                { field: 'KeyWords', title: 'KeyWords', width: 300, align: 'right' },
+                { field:'Office', title:'office',width:80},  
+                { field: 'Status', title: 'status', width: 80 },
+                { field: 'CreatedDate', title: 'created', width: 80 },
+                { field: 'LastChangedDate', title: 'lastChanged', width: 80 },
+                { field: 'ResponseTime', title: 'responsetime', width: 80 },
+                { field: 'Count', title: 'count', width: 80 },
+
+            ]]
+        });
+    
+        $('#TicketReport').treegrid({ loadData: { ChkClosed: true} });
+        $('#TicketReport').animate({ width: "100%", height: "100%", marginLeft: "0" });
+    }
+   
+</script>
+
+<!-- invisible tooltip texts -->
+<div id="tooltips" class="invisible">
+    <div id="tooltip-StrOfficeID">
+        <p>Если Вы просматриваете заявки, отправленные Вам из других отделов,то выберите</p>
+        <ul>
+            <li>нужное подразделение, чтобы просматривать заявки из этого отдела или </li>
+            <li><strong>'Все'</strong>, чтобы отобразить заявки, направленные из всех отделов</li>
+        </ul>
+    </div>
+    <div id="tooltip-StrTargetOfficeID">
+        <p>Вы имеете права администратора и можете просматривать заявки, направленные в различные отделы. Выберите </p>
+        <ul>
+            <li>определенное подразделение-адресат или </li>
+            <li>'Все', чтобы отобразить заявки, направленные во все подразделения</li>
+        </ul>
+        <p class="red-emphasis">Не забудьте выбрать нужное подразделение из списка подразделений-отравителей!</p>
+    </div>
+    <div id="tooltip-StrAuthorName">
+        <p>Наберите фамилию автора или его часть,чтобы отобразить только заявки, направленные этим сотрудником</p>
+    </div>
+    <div id="tooltip-request-search-parameters">
+        <p>Выберите типы заявки,которые следует отображать:</p>
+        <ul>
+            <li><strong>Открытые</strong> - новые заявки, которые еще никем не были обработаны</li>
+            <li><strong>В работе</strong> - заявки, по которым уже ведется работа. Вы можете увидеть, кому поручена работа с заявкой, в столбце 'кому поручено' таблицы заявок</li>
+            <li><strong>Отклоненные</strong> - заявки, которые были отклонены кем-то из подразделения, в которые они были направлены. Они выполняться не будут. Возможно, причина указана в комментарии (см.таблицу заявок)</li>
+            <li><strong>Исполнение подтверждено</strong> - автор заявки или его подразделение подтвердили, что заявка действительно выполнена. Они довольны и аплодируют стоя</li>
+        </ul>
+        <p>Чтобы увидеть текущие заявки, оставьте галочки только напротив категорий "открытые" и "в работе".</p>
+    </div>
+    <div id="tooltip-DrDnShowMode">
+        <p>Выберите, какие именно заявки Вы хотите увидеть.</p>
+        <ul>
+            <li>Если Вы смотрите <strong>входящие заявки</strong>, выберите пункт <strong>адресованные моему отделу</strong> или <strong>адресованные мне</strong></li>
+            <li>Если Вы смотрите <strong>исяходящие заявки</strong>, выберите пункт <strong>я - автор </strong>или <strong>заявки из моего подразделения</strong></li>
+            <li>Выберите все заявки, чтобы смотреть все заявки</li>
+        </ul>
+        <p class="red-emphasis">Например, если Вы хотите увидеть все заявки, поступившие Вам лично из отдела IT, выберите "IT" из выпадающего списка отправителей и "адресованные мне" из этого списка</p>
+    </div>
+    <div id="tooltip-pick-dates-for-request">
+        <p>Выберите диапазон дат или оставьте эти поля пустыми, чтобы просматривать заявки за все время.</p>
+    </div>
+    <div id="tooltip-create-new">
+        <p>Перейдите по этой ссылке, чтобы создать новую заявку.</p>
+    </div>
+    <div id="tooltip-ticket-search-results">
+        <p>Вы можете </p>
+        <ul>
+            <li>сортировать таблицу по любому столбцу, кликнув на его <strong>заголовок</strong></li>
+            <li>отфильтровать ненужное, использовать критерии поиска (см. выше) и нажав кнопку <strong>фильтровать</strong></li>
+        </ul>
+        <p>Чтобы просмотреть заявку, изменить или отредактировать ее или изменить ее статус, кликните на ее <strong>заголовок</strong>.</p>
+    </div>
+
+</div>
+

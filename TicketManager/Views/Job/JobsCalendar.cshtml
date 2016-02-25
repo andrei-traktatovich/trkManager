@@ -1,0 +1,173 @@
+﻿@{
+    ViewBag.Title = "График занятости";
+}
+
+<h2>@ViewBag.Title</h2>
+
+
+@using (Ajax.BeginForm(new AjaxOptions { InsertionMode = InsertionMode.Replace, LoadingElementId = "progress", 
+    OnFailure = "errore", UpdateTargetId = "calendarDIV", Url = Url.Content(Url.Action("Gantt")), OnSuccess = "wireUpJobGanttTable" }))
+{
+        
+    <div class="clear-fix">
+        <div class="float-left">
+
+            <div id="search-by-name" class="search-criteria">
+                <span>Имя исполнителя содержит </span>@Html.TextBox("employeeName")
+            </div>
+            <div id="search-by-job-name" class="search-criteria">
+                <span># заказа содержит</span>@Html.TextBox("JobID")
+            </div>
+        </div>
+        <div class="float-left border-left">
+            <div id="basic-search" class="search-criteria">
+                <span>Подразделение</span>@Html.DropDownList("officeID")<span>&nbsp;|&nbsp;</span>
+                @Html.CheckBox("showStandBy")<span>Резерв&nbsp;|&nbsp;</span>
+                @Html.CheckBox("showBlackList")<span>Черный список&nbsp;|&nbsp;</span>
+                @Html.CheckBox("hideVacant", false)<span>Скрывать свободных</span>
+                @Html.CheckBox("extendedSearch", false, new { onchange = "toggleLanguagePanel(); return false;" })<span>Дополнительные параметры</span>
+                <div id="other-criteria" class="invisible">
+                    <span>Направление перевода</span>@Html.DropDownList("languageDirectionID", ViewData["languageDirections"] as SelectList)
+                    &nbsp;|&nbsp;<span>Компетенция</span>@Html.DropDownList("competenceID", ViewData["competences"] as SelectList)
+                    &nbsp;|&nbsp;
+            <div style="position: relative;">
+                <a href="#" onclick="showDomainList(); return false;">Тематики: <span id="domains-list"></span>
+                </a>
+                <div id="domain-selector" class="invisible large-domain-list">
+                    @Html.ListBox("domainID", ViewData["domains"] as MultiSelectList, new { @class = "invisible large-domain-list" })
+                </div>
+            </div>
+                    &nbsp;|&nbsp;<span>Мин.оценка</span>@Html.DropDownList("grade", ViewData["grades"] as SelectList)
+                    &nbsp;|&nbsp;<span>Макс.тариф</span>@Html.TextBox("maxRate")
+                </div>
+                <div class="sort-parameters">
+                    @Html.CheckBox("sortByRate")<span>Сортировать по тарифу</span>&nbsp;|&nbsp;
+                @Html.CheckBox("sortByStars")<span>Сортировать по компетенции</span>&nbsp;|&nbsp;
+                @Html.CheckBox("sortByQA")<span>Сортировать по QA</span>&nbsp;|&nbsp;
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <div class="clear-fix"></div>
+    <div class="clear-float">
+        <button id="week-back">-1 неделя</button>
+        <button id="back">-1 день</button>
+
+        @Html.TextBox("startDate", DateTime.Now.ToString("dd.MM.yyyy"), new { @class = "date-picker" })
+        <button id="forwards">+1 день</button>
+        <button id="week-forwards">+1 неделя</button>
+        @Html.CheckBox("showHours")<span>&nbsp;|&nbsp;С почасовой детализацией</span>
+
+        <input type="submit" class="search-button" />
+    </div>
+}
+
+<div class="clear-fix"></div>
+<div id="calendarDIV">
+</div>
+
+<div id="job-details-pane">
+</div>
+
+<script>
+    
+    function errore(xhr, status, error) {
+        alert('Ошибка: ' + error);
+    }
+
+    function showDetails(JobID) {
+        //$('jobgeneraldata').load();
+        alert(JobID);
+        updateParticipants(JobID);
+    }
+    function updateParticipants(JobID) {
+        $('#job-participants').treegrid({
+            width: 500,
+            height: 600,
+            url: '@(Url.Content(Url.Action("GetParticipants")))/' + JobID,
+            idField: 'Id',
+            treeField: 'Name',
+            columns: [[
+                { title: 'Имя', field: 'Name', width: 180 },
+                { field: 'DateStart', title: 'Начало', width: 60, align: 'right' },
+                { field: 'DateEnd', title: 'Конец', width: 80 },
+                { field: 'JobType', title: 'Тип', width: 80 }
+            ]]
+        });
+    }
+    
+    function showJobDetailsPane() {
+        $('#job-details-pane').dialog({ closed: false, width: 900, height: 700 });
+        $('#job-details-wrapper').layout();
+        var JobID = $('#hidden-job-id').text();
+
+        updateParticipants(JobID);
+
+        $('#file-tree').treeview();
+    }
+
+    function showDomainList() {
+        $('#domainID').multiselect();
+        $('#domain-selector').fadeIn('invisible');
+    }
+
+    function doPageSettings() {
+
+        
+        $('#back').click(function () { addDay('#startDate', -1); });
+        $('#forwards').click(function () { addDay('#startDate', 1); });
+        $('#week-back').click(function () { addDay('#startDate', -7); });
+        $('#week-forwards').click(function () { addDay('#startDate', 7); });
+
+        //$('#job-details-pane').dialog({ autoOpen: false, width: "80%" });
+        $('#employeeName').keyup(function () { hideOtherOptions(this); });
+        $('#JobID').keyup(function () { hideOtherOptions(this); });
+
+        $('#domain-selector').mouseleave(function () { $(this).fadeOut(); });
+
+        function hideOtherOptions(el) {
+            var e = $(el).closest('div.search-criteria');
+            if ($(el).val() != '') {
+                $('.search-criteria').not(e).fadeOut();
+            }
+            else
+                $('.search-criteria').not(e).fadeIn();
+        }
+
+        function addDay(el, num) {
+            var e = $(el);
+            var v = e.val();
+            var day = parseInt(v.substr(0, 2)),
+      month = parseInt(v.substr(3, 2)),
+     year = parseInt(v.substr(6, 4));
+
+            var newDate = new Date(year, month - 1, day);
+
+            newDate.setTime(newDate.getTime() + (num * 24 * 60 * 60 * 1000));
+            e.val(padded(newDate.getDate()) + "." + padded(newDate.getMonth() + 1) + "." + padded(newDate.getFullYear()));
+        }
+        function padded(e) {
+            var result = e.toString();
+            return (result.length == 1 ? "0" + result : result);
+        }
+    }
+
+    function wireUpJobGanttTable() {
+
+        /* fixed-header script doesn't work for some reason */
+        /*$('#jobs-schedule-table').fixedHeaderTable({
+            footer: false,
+            fixedColumn: true,
+            themeClass: 'table-calendar no-select', height: 600
+        });
+        $('#jobs-schedule-table').show();*/
+        $('.calendar-job-no-info-area').mouseleave(function () { $(this).children().removeClass('drop-down-info-block'); });
+        
+    }
+
+    function toggleLanguagePanel() {
+        $('#other-criteria').toggleClass('invisible');
+    }
+
+</script>

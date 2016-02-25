@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="ca6c3323afeb4150aa0211d6204ff11b" Name="Diagram1" ZoomLevel="100">
+        <EntityTypeShape EntityType="TraktatTicketModel.Title" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="TraktatTicketModel.TitleStatus" Width="1.5" PointX="2.625" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="TraktatTicketModel.Translator" Width="1.5" PointX="0.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="TraktatTicketModel.PersonalInfo" Width="1.5" PointX="2.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="TraktatTicketModel.Office" Width="1.5" PointX="4.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="TraktatTicketModel.TicketLevel" Width="1.5" PointX="8.5" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="TraktatTicketModel.Ticket" Width="1.5" PointX="6.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="TraktatTicketModel.TicketStatus" Width="1.5" PointX="10.875" PointY="6.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="TraktatTicketModel.TicketType" Width="1.5" PointX="10.75" PointY="3.75" IsExpanded="true" />
+        <AssociationConnector Association="TraktatTicketModel.FK_tickets_Perevod" />
+        <AssociationConnector Association="TraktatTicketModel.FK_tickets_Perevod1" />
+        <AssociationConnector Association="TraktatTicketModel.FK_tickets_Perevod2" />
+        <AssociationConnector Association="TraktatTicketModel.FK_tickets_ticketlevels" />
+        <AssociationConnector Association="TraktatTicketModel.FK_tickets_ticketstatuses" />
+        <AssociationConnector Association="TraktatTicketModel.FK_tickets_tickettypes" />
+        <AssociationConnector Association="TraktatTicketModel.OfficeTranslator" />
+        <AssociationConnector Association="TraktatTicketModel.TitleTranslator" />
+        <AssociationConnector Association="TraktatTicketModel.FK_ticketstatuses_ticketstatuses" />
+        <AssociationConnector Association="TraktatTicketModel.OfficeTicket" />
+        <AssociationConnector Association="TraktatTicketModel.PersonalInfoTranslator" />
+        <AssociationConnector Association="TraktatTicketModel.TranslatorOffice" />
+        <EntityTypeShape EntityType="TraktatTicketModel.TicketAttachment" Width="1.5" PointX="11.314739489608789" PointY="10.580089812437114" />
+        <AssociationConnector Association="TraktatTicketModel.FK_ticketattachments_tickets" />
+        <EntityTypeShape EntityType="TraktatTicketModel.TicketComment" Width="1.5" PointX="0.90325671848992672" PointY="29.12824900314596" />
+        <AssociationConnector Association="TraktatTicketModel.FK_ticketcomments_tickets" />
+        <AssociationConnector Association="TraktatTicketModel.FK_ticketcomments_Perevod" />
+        <EntityTypeShape EntityType="TraktatTicketModel.CalendarPeriod" Width="1.5" PointX="11.500387781998324" PointY="24.630262088324066" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Calendar_Perevod" />
+        <AssociationConnector Association="TraktatTicketModel.OfficeCalendarPeriod" />
+        <EntityTypeShape EntityType="TraktatTicketModel.JobParticipant" Width="1.5" PointX="8" PointY="28.25" />
+        <EntityTypeShape EntityType="TraktatTicketModel.Job" Width="1.5" PointX="6.5757249475343729" PointY="30.481982707270411" />
+        <EntityTypeShape EntityType="TraktatTicketModel.JobFile" Width="1.5" PointX="4.8230453118789223" PointY="26.62385979044431" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Perv_Perevod" />
+        <AssociationConnector Association="TraktatTicketModel.FK_rab_dop_Perevod" />
+        <AssociationConnector Association="TraktatTicketModel.JobParticipantRab" />
+        <AssociationConnector Association="TraktatTicketModel.JobFileJobParticipant" />
+        <AssociationConnector Association="TraktatTicketModel.JobFileJob" />
+        <EntityTypeShape EntityType="TraktatTicketModel.Language" Width="1.5" PointX="3.75" PointY="24" />
+        <EntityTypeShape EntityType="TraktatTicketModel.JobType" Width="1.5" PointX="7.75" PointY="23.625" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Rab_Vid" />
+        <AssociationConnector Association="TraktatTicketModel.LanguageJob" />
+        <AssociationConnector Association="TraktatTicketModel.LanguageJobParticipant" />
+        <AssociationConnector Association="TraktatTicketModel.JobTypeJobParticipant" />
+        <EntityTypeShape EntityType="TraktatTicketModel.Domain" Width="1.5" PointX="13.375" PointY="24.75" />
+        <AssociationConnector Association="TraktatTicketModel.DomainJob" />
+        <AssociationConnector Association="TraktatTicketModel.DomainJob1" />
+        <EntityTypeShape EntityType="TraktatTicketModel.JobStatus" Width="1.5" PointX="10.75" PointY="29" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Rab_Stat_help" />
+        <EntityTypeShape EntityType="TraktatTicketModel.JobParticipantStatus" Width="1.5" PointX="11.243856282552638" PointY="0.65122410685346654" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Perv_Stat_per" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Rab_Stat_per" />
+        <EntityTypeShape EntityType="TraktatTicketModel.AccountingStatus" Width="1.5" PointX="2.5" PointY="34" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Rab_Stat_buh" />
+        <EntityTypeShape EntityType="TraktatTicketModel.Customer" Width="1.5" PointX="0.75" PointY="32.125" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Rab_Zakaz" />
+        <AssociationConnector Association="TraktatTicketModel.JobOffice" />
+        <EntityTypeShape EntityType="TraktatTicketModel.OMKRequestStatus" Width="1.5" PointX="4.75" PointY="35.375" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Rab_Stat_An" />
+        <EntityTypeShape EntityType="TraktatTicketModel.OCRRequestStatus" Width="1.5" PointX="4.625" PointY="38.75" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Rab_Stat_Pred" />
+        <AssociationConnector Association="TraktatTicketModel.JobOMKRequestStatus" />
+        <AssociationConnector Association="TraktatTicketModel.JobParticipantJob" />
+        <EntityTypeShape EntityType="TraktatTicketModel.MarketingClass" Width="1.5" PointX="2.5" PointY="36.5" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Zakaz_Zak_mark" />
+        <EntityTypeShape EntityType="TraktatTicketModel.Category" Width="1.5" PointX="8.75" PointY="6.25" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Rab_Kategor" />
+        <EntityTypeShape EntityType="TraktatTicketModel.EditorialComment" Width="1.5" PointX="8.9857761156679015" PointY="17.141746827001565" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Rab_Redak_Perevod" />
+        <AssociationConnector Association="TraktatTicketModel.EditorialCommentJob" />
+        <EntityTypeShape EntityType="TraktatTicketModel.TranslatorRole" Width="1.5" PointX="25.625" PointY="17.625" />
+        <EntityTypeShape EntityType="TraktatTicketModel.Role" Width="1.5" PointX="22.375" PointY="18.25" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Per_Role_Perevod" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Per_Role_Role" />
+        <EntityTypeShape EntityType="TraktatTicketModel.TranslationDirection" Width="1.5" PointX="2" PointY="43.375" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Lan_Perevod" />
+        <AssociationConnector Association="TraktatTicketModel.TranslationDirectionLanguage" />
+        <EntityTypeShape EntityType="TraktatTicketModel.InternalDomain" Width="1.5" PointX="4.375" PointY="47.25" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Per_Tem_Lan" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Per_Tem_Tema" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Per_Tem_Perevod" />
+        <EntityTypeShape EntityType="TraktatTicketModel.CurrentStatus" Width="1.5" PointX="8.2803176158481833" PointY="11.299859648244389" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Perevod_stat" />
+        <AssociationConnector Association="TraktatTicketModel.FK_tickets_Perevod3" />
+        <AssociationConnector Association="TraktatTicketModel.FK_tickets_Perevod4" />
+        <AssociationConnector Association="TraktatTicketModel.FK_tickets_tickets" />
+        <EntityTypeShape EntityType="TraktatTicketModel.PaymentInfo" Width="1.5" PointX="11.125" PointY="48" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Stat_per_Stat_per" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Calendar_Perevod1" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Perevod_Perevod" />
+        <EntityTypeShape EntityType="TraktatTicketModel.StaffStatus" Width="1.5" PointX="3.4643571243921096" PointY="20.064922774240806" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Calendar_staff_statuses" />
+        <AssociationConnector Association="TraktatTicketModel.TicketTypeOffice" />
+        <EntityTypeShape EntityType="TraktatTicketModel.AttractionChannel" Width="1.5" PointX="10.610787949809239" PointY="27.997482223435064" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Rab_Spo_Attract" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Zakaz_Spo_Attract" />
+        <EntityTypeShape EntityType="TraktatTicketModel.JobGrade" Width="1.5" PointX="5.9852040046757109" PointY="20.275673756504279" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Ocen_Perevod" />
+        <AssociationConnector Association="TraktatTicketModel.OfficePaymentInfo" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Per_Tem_Perevod1" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Per_Tem_Perevod2" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Tema_Perevod" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Tema_Perevod1" />
+        <EntityTypeShape EntityType="TraktatTicketModel.ContactAndStatusChangeReportItem" Width="1.5" PointX="3.375" PointY="8.75" />
+        <EntityTypeShape EntityType="TraktatTicketModel.tema_active" Width="1.5" PointX="5.375" PointY="11.75" />
+        <EntityTypeShape EntityType="TraktatTicketModel.PaymentItemType" Width="1.5" PointX="6.5" PointY="0.5" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Stat_Prihodnik_Stat_Prihodnik" />
+        <EntityTypeShape EntityType="TraktatTicketModel.PaymentMethod" Width="1.5" PointX="13.375" PointY="0.875" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Rab_buh_Spo_Opl" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Rab_buh_Stat_Prihodnik" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Rab_buh_Perevod" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Rab_buh_Perevod1" />
+        <AssociationConnector Association="TraktatTicketModel.FK_Spo_Opl_Spo_Opl" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

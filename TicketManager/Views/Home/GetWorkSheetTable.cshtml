@@ -1,0 +1,59 @@
+﻿@model TicketManager.WorkSheetTable
+
+@if (Model == null)
+{
+    <p>Ничего нету</p>
+}
+else
+{
+    
+    <p>С @Model.StartDate.ToString("dd.MM.yyyy") по @Model.EndDate.ToString("dd.MM.yyyy")</p>
+    <table class="table-with-borders worksheettable">
+        <tr>
+            <th>Имя</th>
+            <th>Должность</th>
+            @for (var date = Model.StartDate; date <= Model.EndDate; date = date.AddDays(1))
+            {
+                <th>@(date.ToString("dd.MM.yy"))</th>
+                
+                
+            }
+            <th>
+                Дней отработано
+            </th>
+        </tr>
+        @foreach (var line in Model.Lines)
+        {
+            <tr>
+                <td>
+                    @line.Employee.Name
+                </td>
+                <td>
+                    @line.Employee.Title.Name
+                </td>
+                @foreach (var day in line.Days)
+                {
+                    string className = "";
+                    className = "work-" + Enum.GetName(typeof(TicketDataModel.StaffStatuses), day.Status.ID);
+                    
+                    if (!day.Confirmed)
+                    {
+                        className = className + " statusConfirmed-false";
+                    }
+                    
+                    <td class="easyui-tooltip worksheetcell @className" title="@day.Comment">
+                        @day.Status.Name
+                        <br />
+                        @day.Office
+
+                    </td>
+                }
+                <td>
+                    @line.TotalWorkingDays
+                </td>
+            </tr>
+
+
+        }
+    </table>
+}

@@ -1,0 +1,388 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+<h1>Внимание: БЕТА-версия </h1>
+<div class="container">
+
+    <div class="row">
+        <div class="col-md-12">
+            <a id="btnToggleAll" class="btn" onclick="toggleAll(this);"></a>|
+        Сортировать по 
+        <select id="sorttype">
+            <option value="name">названию</option>
+            <option value="usedby">количеству переводчиков</option>
+            <option value="usedin">количеству заказов</option>
+        </select>
+            &nbsp;|&nbsp;
+         
+        <a class="btn" onclick="resort();">Вперед!</a>
+
+
+
+        </div>
+    </div>
+
+    <div class="row" style="height: 700px;">
+
+        <div class="col-md-12" style="height: 680px; overflow: scroll;">
+            <div id="results">
+                <ul class="list-unstyled" data-bind="foreach: Items">
+                    <li>
+                        <div class="domainline">
+                            <h3>
+                                <a class="btn showdetails" onclick="toggle(this);">&gt;&gt;</a>
+
+                                <span data-bind="text: Name, css: { strikethrough: IsDeleted() }"></span>
+                                &nbsp;&nbsp;
+                                <span class="label label-info" data-bind="text: UsedBy, visible: $root.WithCounts"></span>
+                                &nbsp;
+                            <span class="label label-success" data-bind="text: UsedIn, visible: $root.WithCounts"></span>
+                            </h3>
+                            <div class="actions">
+                                <p>
+                                    Создано: <span data-bind="text: CreatedBy() + ' (' + CreatedDate() + ')'"></span>,&nbsp;
+                                    изменено: <span data-bind="text: ModifiedBy() + ' (' + ModifiedDate() + ')'"></span>
+                                </p>
+                                <button class="btn btn-danger" data-bind="visible: !IsDeleted(), click: function () { $root.deleteItem($data); }">Удалить</button>
+                                <button class="btn btn-success" data-bind="visible: IsDeleted(), click: function () { $root.unDeleteItem($data); }">Восстановить</button>
+                                <button class="btn btn-success" data-toggle="modal" data-target="#rename-form" data-bind="visible: !IsDeleted(), click: function () { selectedItem.beginRenameItem($data); }">
+                                    Переименовать
+                                </button>
+                                <button class="btn btn-success" data-toggle="modal" data-target="#rename-form" data-bind="visible: !IsDeleted(), click: function () { selectedItem.beginCreateSubItem($data); }">
+                                    Создать подтематику
+                                </button>
+                                <button class="btn btn-success" data-toggle="modal" data-target="#rename-form" data-bind="visible: !IsDeleted(), click: function () { selectedItem.beginСreateTopItem($data); }">
+                                    Создать тематику
+                                </button>
+                            </div>
+                        </div>
+
+                        <ul class="list-unstyled children" style="padding-left: 100px;" data-bind="foreach: Children">
+                            <li data-bind="css: { strikethrough: IsDeleted() }">
+                                <div class="domainline">
+                                    <h5>
+
+                                        <span data-bind="text: Name, css: { strikethrough: IsDeleted() }"></span>&nbsp;&nbsp;<span class="label label-info" data-bind="text: UsedBy, visible: $root.WithCounts"></span>
+                                        &nbsp;<span class="label label-success" data-bind="visible: $root.WithCounts, text: UsedIn"></span>
+                                    </h5>
+                                    <div class="actions">
+                                        <p>
+                                            Создано: <span data-bind="text: CreatedBy() + ' (' + CreatedDate() + ')'"></span>,&nbsp;
+                                    изменено: <span data-bind="text: ModifiedBy() + ' (' + ModifiedDate() + ')'"></span>
+                                        </p>
+                                        <button class="btn btn-danger" data-bind="visible: !IsDeleted(), click: function () { $root.deleteItem($data); }">Удалить</button>
+                                        <button class="btn btn-success" data-bind="visible: IsDeleted(), click: function () { $root.unDeleteItem($data); }">Восстановить</button>
+                                        <button class="btn btn-success" data-toggle="modal" data-target="#rename-form" data-bind="visible: !IsDeleted(), click: function () { selectedItem.beginRenameItem($data); }">
+                                            Переименовать
+                                        </button>
+
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <p><span class="label label-info">13</span> - количество переводчиков, у которых есть эта тематика</p>
+        <p><span class="label label-success">13</span> - количество заказов, где указана эта тематика</p>
+        <p class="strikethrough">Удаленная тематика выглядит так.</p>
+    </div>
+    
+</div>
+
+
+<div class="modal fade" id="rename-form" tabindex="-1" role="dialog" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" data-bind="text: ActionHeader"></h4>
+            </div>
+            <div class="modal-body">
+                <h3 class="modal-title" data-bind="text: ExistingValueName">Старое название</h3>
+                 
+                <p data-bind="text: Name, visible: Action() != 'item'"></p>
+                <h3 class="modal-title" data-bind="text: NewValueName"></h3>
+                
+                <input type="text" data-bind="value: NewName, valueUpdate: 'afterkeydown'" onkeyup="selectedItem.checkUnique();" />
+                
+                <span class="label label-danger" data-bind="visible: !(IsNewNameUnique())">Это название уже есть!</span>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-primary" data-bind="click: performAction">Сохранить</button>
+                <p data-bind="text:Action"></p>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+<script>
+    function toggleAll() {
+        var children = $('.children');
+
+        children.toggle();
+        var btnText = children.is(':visible') ? 'Свернуть' : 'Развернуть';
+
+        $('#btnToggleAll').text(btnText);
+        return false;
+    }
+
+    function expandAll() {
+        $('.children').show();
+        return false;
+    }
+
+    function toggle(el) {
+
+        var element = $(el).closest('li').find('.children');
+
+        $(element).toggle();
+        return false;
+    }
+    var bound = false;
+    var vm = {};
+    var selectedItem = {};
+
+    function doPageSettings() {
+
+        toggleAll();
+
+        reload('name');
+    }
+
+    function resort() {
+        var sortType = $('#sorttype').val();
+
+        reload(sortType);
+    }
+
+    function reload(sortType) {
+        var data = { sortType: sortType }
+        var getAllURL = '@Url.Content(Url.Action("GetAll"))';
+        getData(getAllURL, data);
+
+
+        function getData(url, data) {
+            $.ajax({ url: url, data: data, type: "GET", success: success }).fail(fail);
+        }
+
+        function fail(data, textStatus, jqXHR) { console.log('fail'); console.dir(textStatus); }
+
+        function success(data, textStatus, jqXHR) {
+            console.dir(data);
+            displayResults(data);
+        }
+
+        function displayResults(model) {
+            if (!bound) {
+
+                console.log('model = ');
+                console.dir(model);
+                vm = ko.mapping.fromJS(model);
+                console.log("viewmodel=" + vm.UserName());
+                
+                vm.deleteItem = function (item) {
+
+                    // hit the server 
+                    var data = { id: item.ID() };
+                    $.ajax({
+                        url: '@Url.Action("DeleteItem")',
+                            data: data, type: "GET",
+                            success: itemDeleted
+                    }).fail(deleteFailed);
+
+                    function deleteFailed(result, textStatus, jqXHR) {
+                        toastr.error(textStatus, 'Ошибка');
+                    }
+
+                    function itemDeleted(result) {
+                        
+                        if (result.Success) {
+
+                            item.IsDeleted(true);
+                            item.ModifiedBy(vm.UserName());
+                            var date = new Date();
+                            item.ModifiedDate(date.toLocaleDateString("ru-RU"));
+                            if (item.Children().length > 0) {
+                                item.Children().forEach(function (child) {
+                                    child.IsDeleted(true);
+                                });
+                            }
+                        }
+                        else {
+                            toastr.error(result.ErrorMessage);
+                        }
+                    }
+                };
+                vm.unDeleteItem = function (item) {
+                    // hit the server 
+                    var data = { id: item.ID() };
+                    $.ajax({
+                        url: '@Url.Action("RestoreItem")',
+                        data: data, type: "GET",
+                        success: itemRestored
+                    }).fail(function () { toastr.error('Ошибка'); });
+                    // if success then
+                    function itemRestored(result) {
+                        if (result.Success) {
+                            item.ModifiedBy(vm.UserName());
+                            var date = new Date();
+                            item.ModifiedDate(date.toLocaleDateString("ru-RU"));
+                            item.IsDeleted(false);
+                        }
+                        else
+                            toastr.error(result.ErrorMessage);
+                    }
+                };
+
+                selectedItem = {
+                    Action : ko.observable('none'),
+                    IsNewNameUnique: ko.observable(false),
+                    Name: ko.observable(''),
+                    ID: ko.observable(-1),
+                    ParentID: ko.observable(-1),
+                    NewName: ko.observable(''),
+                    ExistingValueName: ko.observable(''),
+                    NewValueName: ko.observable(''),
+                    ActionHeader: ko.observable(''),
+                    mainViewModelItem: {},
+
+                    checkUnique: function () {
+
+                        var data = { id: this.ID(), name: this.NewName() };
+                        $.ajax({
+                            url: '@Url.Action("CheckUniqueName")',
+                            data: data, type: "GET",
+                            success: function (result) { selectedItem.IsNewNameUnique(result.isNameUnique); }
+                        }).fail(uniqueCheckFail);
+
+                        function uniqueCheckFail(result, textStatus, jqXHR) {
+                            toastr.error('ошибка');
+                        }
+                    },
+
+                    beginRenameItem: function (item) {
+                        this.mainViewModelItem = item;
+                        vm.selectedItem = item;
+                        this.Name(item.Name());
+                        this.ID(item.ID());
+                        this.NewName(item.Name());
+                        this.IsNewNameUnique(false);
+                        this.ParentID(-1);
+                        this.Action("rename");
+                        this.ActionHeader('Переименование тематики');
+                        this.ExistingValueName('Старое наименование');
+                        this.NewValueName('Новое наименование');
+                    },
+
+                    beginCreateSubItem: function (item) {
+                        this.mainViewModelItem = item;
+                        vm.selectedItem = item;
+                        this.Name(item.Name());
+                        this.ID(-1);
+                        this.NewName('');
+                        this.IsNewNameUnique(true);
+                        this.ParentID(item.ID());
+                        this.Action("subitem");
+                        this.ActionHeader('Создание подтематики');
+                        this.ExistingValueName('Родительская тематика');
+                        this.NewValueName('Новая подтематика');
+                    },
+
+                    beginСreateTopItem: function (item) {
+                        console.log('hit beginСreateTopItem');
+                        this.mainViewModelItem = item;
+                        vm.selectedItem = item;
+                        this.Name(item.Name());
+                        this.ID(-1);
+                        this.NewName('');
+                        this.IsNewNameUnique(true);
+                        this.ParentID(-1);
+                        this.Action("item");
+                        this.ActionHeader('Создание новой тематики');
+                        this.ExistingValueName('');
+                        this.NewValueName('Новая тематика');
+                    },
+
+                    performAction: function () {
+                        console.log('performAction hit');
+                        
+                        $('#rename-form').modal('hide');
+                        var url = '@Url.Content(Url.Action("ManageItem"))';
+
+                        var data = { id: this.ID(), parentID: this.ParentID(), name: this.NewName(), actionType: this.Action() };
+
+                        console.log('calling ManageItem with data:');
+                        console.dir(data);
+
+                        getData(url, data);
+
+
+                        function getData(url, data) {
+                            $.ajax({ url: url, data: data, type: "GET", success: success }).fail(fail);
+                        }
+
+                        function success(result) {
+
+                            if (result.Success) {
+                                console.log('calling ' + selectedItem.Action());
+                                selectedItem[selectedItem.Action()](result.Item);
+                            }
+                            else {
+                                toastr.error(result.ErrorMessage);
+                            }
+                        }
+
+                        function fail() {
+                            toastr.error('Ашыпко');
+                        }
+                    },
+
+                    rename: function (item) {
+                        console.log('rename hit');
+                        vm.selectedItem.Name(item.Name);
+                        vm.selectedItem.ModifiedBy(item.ModifiedBy);
+                        vm.selecteditem.ModifiedDate(item.ModifiedDate);
+                        
+                        
+                        //this.mainViewModelItem.Name(item.NewName());
+                    },
+
+                    item: function (item) {
+                        
+                        console.log('item hit');
+                        vm.Items.unshift(ko.mapping.fromJS(item));
+
+                    },
+
+                    subitem: function (item) {
+                        
+                        vm.selectedItem.Children.unshift(ko.mapping.fromJS(item));
+                        console.log('subitem hit');
+                    }
+
+            
+                };
+                ko.applyBindings(selectedItem, document.getElementById('rename-form'));
+                ko.applyBindings(vm, document.getElementById('results'));
+                bound = true;
+            }
+            else {
+
+                ko.mapping.fromJS(model, vm);
+            }
+
+        }
+
+
+    }
+</script>

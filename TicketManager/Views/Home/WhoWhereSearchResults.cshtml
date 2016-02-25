@@ -1,0 +1,211 @@
+﻿@model IEnumerable<TicketDataModel.Translator>
+@if (Model.Count() > 0)
+{
+    var currentUser = TicketManager.CurrentUser.GetCurrentUser();
+    var currentUserID = currentUser.TranslatorID;
+
+    var isManagement = currentUser.IsManagement();
+    var isHR = currentUser.IsHR();
+    <table class="table table-condensed table-hover">
+        <tr>
+            <th></th>
+            <th>Имя</th>
+
+            <th>Тек.офис</th>
+            <th>Пост.офис</th>
+            <th>Статус</th>
+            <th>Отметка</th>
+            <th>Дата подтв.</th>
+            <th>Кем подтв.</th>
+            <th>email</th>
+            <th>Телефон моб.</th>
+            <th>Телефон дом.</th>
+            <th>Телефон раб.</th>
+        </tr>
+        @{bool mayModifySomeData = false;}
+        @foreach (var t in Model)
+        {
+            var mayModifyData = (isManagement || isHR || currentUser.IsBossAt((int)t.OfficeID));
+            if (mayModifyData)
+            {
+                mayModifySomeData = true;
+            }
+
+            var status = TicketDataModel.TranslatorExtensions.GetCurrentCalendarPeriod(t, DateTime.Now.Date); 
+            
+            <tr>
+                <td>
+                    @if (mayModifyData)
+                    {
+                        if (status == null || (status != null && !status.Confirmed))
+                        {
+                        @Html.CheckBox("chkConfirm" + t.TranslatorID, false, new { @class = "confirm-checkbox" })
+                        }
+                    }
+
+                </td>
+                <td>
+                    @{var currentDate = DateTime.Now.Date; var standBy = "";}
+
+                    @if (t.CalendarPeriods.Where(x => x.StartDate.Value.Date <= currentDate.Date && x.EndDate.Value.Date >= currentDate.Date && x.StandBy == true).Count() > 0)
+                    {
+                        standBy = "employee-stand-by";
+                    }
+                    <div class="employee-table-surname @standBy" title="Кликните, чтобы просмотреть график работы">
+                        @if (mayModifyData)
+                        {
+                            <a href="#calendar-popup" data-toggle="modal" 
+                                onclick="showCalendarByID(@t.TranslatorID, currentMonth, currentYear);">
+                                @t.Name
+                            </a>
+                        }
+                        else
+                        {   @t.Name }
+
+                        <br />
+                        <small><em>
+                            @if (mayModifyData)
+                            {
+                                <a href="#popup-change-title" data-toggle="modal" 
+                                    onclick="modifyTitle('@t.Name', @t.TranslatorID, @t.TitleID);">
+                                @t.Title.Name
+                                </a>
+                            }
+                            else
+                            {
+                                @t.Title.Name
+                            }
+                               </em></small>
+                    </div>
+                </td>
+
+                <td class='padding20 @(mayModifyData ? "changeable-office" : "")'>
+                    @if (t.Office != null)
+                    {
+                        var wrongOffice = (status != null ? (t.OfficeID != status.OfficeID) : false);
+                        var message = wrongOffice ? "Текущее место работы не соответствует графику!" : "Текущее место работы соответствует графику";
+                        if (mayModifyData)
+                        {
+                        <a href="#popup-change-temp-office" data-toggle="modal" class='@(wrongOffice ? "easyui-tooltip error" : "")' 
+                            onclick="modifyTempOffice('@t.Name', @t.TranslatorID, @t.Office.ID);"
+                            
+                            title="@message">
+                            @t.Office.Name
+                        </a>
+                        }
+                        else 
+                        {
+                            <span title ="@message">@t.Office.Name </span>
+                        }
+                    }
+                </td>
+                <td>@{var office = (ViewData["offices"] as IEnumerable<TicketDataModel.Office>).Where(x => x.ID == t.Podr_now).SingleOrDefault();
+                      var officeName = office == null ? "нет данных" : office.Name;
+                }
+                    @if (mayModifyData)
+                    {    
+                        <a href="#popup-change-perm-office" data-toggle="modal" onclick="modifyPermanentOffice('@t.Name', @t.TranslatorID, @t.Podr_now);">@officeName</a>
+                    }
+                    else
+                    {
+                        @officeName
+                    }
+                </td>
+                <td>
+                    @if (mayModifyData)
+                    {
+                        <a href="#popup-change-active-status" data-toggle="modal" onclick="modifyActiveStatus('@t.Name', @t.TranslatorID, '@t.active');">@t.active</a>
+                    }
+                    else
+                    {
+                        @t.active
+                    }
+                </td>
+                <td>
+
+
+                    @if (status != null)
+                    { 
+                        <div class='easyui-tooltip statusConfirmed-@(status.Confirmed ? "true" : "false")' title='@("Последнее изменение - от " + status.CreatedDate.ToString("dd.MM.yy") +
+                        "внесено пользователем: " + (status.Creator != null ? status.Creator.Name : "нет данных"))'>
+                            @if (mayModifyData)
+                            {
+                                <a href="#popup-change-staff-status" data-toggle="modal" onclick="modifyTempStatus('@t.Name', @t.TranslatorID, @((int)status.StaffStatusID));">
+                                    @(status.StaffStatus)
+                                </a>
+                            }
+                            else
+                            {
+                                @(status.StaffStatus)
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        if (mayModifyData)
+                        {
+                        <a href="#popup-change-staff-status" data-toggle="modal" onclick="modifyTempStatus('@t.Name', @t.TranslatorID, @(status != null ? (int)status.StaffStatusID : 1));">
+                            @(status != null ? status.StaffStatus : "?")
+
+                        </a>
+                        }
+                        else
+                        { @(status != null ? status.StaffStatus : "?") }
+
+
+                    }
+                </td>
+                <td>@(status != null && status.Confirmed ? status.CreatedDate.ToString("dd.MM.yy HH:mm") : "")</td>
+                <td>@(status != null && status.Confirmed ? status.Author : "")</td>
+                <td>
+                    @{var pd = string.Join(";", t.PersonalInfos.Select(x => x.Email));}
+                    <a href="mailto:@pd">@pd</a><br />
+                </td>
+                <td>
+                    @foreach (var mobilePhone in t.PersonalInfos.Select(x => x.MobilePhone))
+                    {
+                        <a href="dial:@(TicketDataModel.PersonalInfo.CleanUpPhoneNumber(mobilePhone))">@mobilePhone</a><br />
+                    }
+                </td>
+                <td>
+                    @foreach (var homePhone in t.PersonalInfos.Select(x => x.HomePhone))
+                    {
+                        <a href="dial:@(TicketDataModel.PersonalInfo.CleanUpPhoneNumber(homePhone))">@homePhone</a><br />
+                    }
+                </td>
+                <td>
+                    @{ if (t.Office != null && t.Office.TranslatorReference != null)
+                       {
+                           var officeRef = t.Office.TranslatorReference.FirstOrDefault();
+                           if (officeRef != null)
+                           {
+                               var phones = officeRef.PersonalInfos.Select(x => x.Phone);
+                               foreach (var phone in phones)
+                               {
+                        <a href="dial:@(TicketDataModel.PersonalInfo.CleanUpPhoneNumber(phone))">@phone</a>
+                               }
+                           }
+                       }
+                    }
+                </td>
+            </tr>
+        }
+
+    </table>
+    
+        if (mayModifySomeData)
+        {
+    <hr />
+    
+    <button class="btn btn-default" onclick="$('.confirm-checkbox').attr('checked', true); return false;">Выбрать всех</button>
+    <span>&nbsp;</span>
+    <button class="btn btn-default" onclick="$('.confirm-checkbox').attr('checked', false); return false;">Снять выделение</button>
+    <span>&nbsp;</span>
+    <button class="btn btn-default" onclick="confirmStatuses(); return false;">Подтвердить отметку о явке</button>
+    <span>&nbsp;</span>
+    
+    <!-- <button onclick="downloadWorkSheetTable(); return false;">Скачать табель</button> --> 
+        }
+}
+else
+{<h2>Ничего не найдено</h2>}

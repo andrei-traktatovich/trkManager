@@ -1,0 +1,15 @@
+﻿@{
+    ViewBag.Title = "Календарь";
+}
+
+<h2>Календарь</h2>
+
+<script>
+    var globalsUrl = '',
+        calendarGetUrl = '',
+        calendarUpdateUrl = '';
+
+    var calendar = new JobsCalendar(globalsUrl, calendarGetUrl, calendarUpdateUrl);
+    console.dir(calendar.globals);
+
+</script>

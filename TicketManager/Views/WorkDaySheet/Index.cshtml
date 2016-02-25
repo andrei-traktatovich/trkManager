@@ -1,0 +1,332 @@
+﻿@model IEnumerable<TicketDataModel.Office>
+
+@{
+    ViewBag.Title = "Табель: список подразделений";
+}
+<div class="container" style="width: 100%; padding: 20px;">
+
+    <div class="row">
+        <div class="col-md-2">
+
+            <div class="form" style="font-size: small">
+
+                <h4>Подразделения</h4>
+
+                <button id="btnSelectAll" style="display: none;" class="btn btn-xs btn-default" onclick="selectAll();">Выделить все</button>
+                <button id="btnUnSelectAll" class="btn btn-xs btn-default" onclick="unselectAll();">Снять выделение</button>
+                <div style="height: 400px; overflow: auto;">
+                    <ul class="list list-unstyled" id="officelist">
+                        @foreach (var office in Model)
+                        {
+                            <li style="width: 250px;">
+                                <input type="checkbox" id="office@(office.ID.ToString())" name="officeId" checked="checked"/>
+                                @office.Name
+                            </li>
+                        }
+                    </ul>
+                </div>
+
+                <div class="row">
+
+                    <div class="form-group">
+                        <label for="startDate">C&nbsp;&nbsp;</label><input type="text" id="startDate" class=" 
+                         easyui-datebox"
+                    data-options="formatter:russianFormatter,parser:datetimeParser" value='@(ViewData["startDate"].ToString())' />
+                    </div>
+                    <div class="form-group">
+                        <label for="endDate">По</label><input type="text" id="endDate" class=" 
+                         easyui-datebox" value='@(ViewData["endDate"].ToString())'
+                    data-options="formatter:russianFormatter,parser:datetimeParser" />
+                    </div>
+
+
+
+                </div>
+                <div class="row">
+                @{var multipleOffices = (bool)ViewData["multipleOffices"];}
+                <div style='visibility:  @(multipleOffices ? "visible" : "hidden")'>
+                    <input type="checkbox" id="useSingleFile" checked="checked" /><span>&nbsp;В разрезе офисов</span><hr />
+                </div>
+                <a class="btn btn-sm btn-primary" onclick="getBreakUpByOffice();">Таблица по офисам (?)</a>
+                <br /><br />
+                <a class="btn btn-sm btn-primary" onclick="getWorkSheetPreview();"
+                    data-toggle="modal" href="#myModal">Посмотреть</a>
+                <br /><br />
+                <a class="btn btn-sm  btn-primary" onclick="getWorkSheetFile();">Получить ссылку на Excel</a>
+                <br /><br />
+                <a href="#" id="downLoadLink"></a>
+                    </div>
+            </div>
+        </div>
+
+        <div class="col-md-10">
+            <div id="placeholder">
+            </div>
+        </div>
+    </div>
+
+    <!-- modal dialog -->
+
+    <div class="modal" id="myModal">
+        <div class="modal-dialog" style="width: 80%; height: 80%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title">Табеля</h4>
+                </div>
+                <div class="modal-body" style="overflow: scroll; height: 600px;">
+                    <div>
+                        <ul class="list list-unstyled" id="chart-placeholder"></ul>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" data-dismiss="modal" class="btn">Закрыть</a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+</div>
+
+
+<script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization',
+       'version':'1','packages':['timeline'], 'language' : 'ru' }]}">
+</script>
+
+<script type="text/javascript">
+
+    function selectAll() {
+        $(".form input:checkbox").prop('checked', true);
+        $('#btnSelectAll').hide();
+        $('#btnUnSelectAll').show();
+        return false;
+    }
+
+    function unselectAll() {
+        $(".form input:checkbox").prop('checked', false);
+        $('#btnUnSelectAll').hide();
+        $('#btnSelectAll').show();
+        return false;
+    }
+
+    function drawChart(data, placeHolder) {
+
+        for (var i = 0, len = data.length; i < len; i++) {
+
+            var container = addChart(placeHolder, data[i].Name);
+
+            var chart = new google.visualization.Timeline(container);
+
+            var dataTable = new google.visualization.DataTable();
+            dataTable.addColumn({ type: 'string', id: 'Имя' });
+            dataTable.addColumn({ type: 'string', id: 'Отметка' });
+            dataTable.addColumn({ type: 'date', id: 'Start' });
+            dataTable.addColumn({ type: 'date', id: 'End' });
+
+            var workSheet = data[i];
+            var timeLines = workSheet.TimeLines;
+            dataTable.addRows(flatten(timeLines));
+
+            chart.draw(dataTable, { width: 2000, height: 600 });
+        }
+
+
+
+        function addChart(el, title) {
+
+            var li = document.createElement('li');
+            //el.style.position = "absolute";
+            var header = document.createElement('h4');
+            header.innerText = title;
+
+            li.appendChild(header);
+
+            var chartContainer = document.createElement('div');
+            li.appendChild(chartContainer);
+
+            el.appendChild(li);
+
+            return chartContainer;
+        }
+
+
+        function flatten(workDayTimeLines) {
+            var result = [];
+
+            for (var i = 0, len = workDayTimeLines.length; i < len; i++) {
+                var item = workDayTimeLines[i];
+
+                if (!item || !item.Periods)
+                    continue;
+
+                for (var q = 0, itemLen = item.Periods.length; q < itemLen; q++) {
+                    period = item.Periods[q];
+                    if (!period)
+                        continue;
+
+                    result.push([item.Name, period.Text + '(' + period.OfficeName + ')', moment(period.Start).toDate(), moment(period.End).toDate()]);
+                }
+            }
+
+            return result;
+        }
+
+    }
+</script>
+
+
+
+
+
+<script>
+
+    function getBreakUpByOffice() {
+        var ids = getOfficeIDs();
+
+        if (ids.length == 0) {
+            toastr.error("Ничего не выбрано!");
+            return;
+        }
+
+        var startDate = getDateBoxValue('#startDate');
+
+        var endDate = getDateBoxValue('#endDate');
+
+        getBreakUp(ids, startDate, endDate);
+
+        function getBreakUp(ids, startDate, endDate) {
+
+            var data = {
+                ids: ids,
+                startDate: startDate,
+                endDate: endDate
+            };
+
+            console.log(data);
+
+            var url = '@(Url.Action("BreakupByOffice", "WorkDaySheet"))';
+
+            showProgressAnimation();
+            $.ajax({
+                url: url,
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(data),
+                success: function (result) {
+                    console.log(result);
+                    hideProgressAnimation();
+                    $('#placeholder').html(result);
+                }
+            });
+
+        }
+    }
+
+    function getWorkSheetFile() {
+
+        var ids = getOfficeIDs();
+
+        if (ids.length == 0) {
+            toastr.error("Ничего не выбрано!");
+            return;
+        }
+
+        var startDate = getDateBoxValue('#startDate');
+
+        var endDate = getDateBoxValue('#endDate');
+
+        getLinkToFile(ids, startDate, endDate);
+
+        function getLinkToFile(ids, startDate, endDate) {
+
+            var service = new AjaxService();
+
+            var data = {
+                ids: ids.join(','),
+                startDate: startDate,
+                endDate: endDate,
+                singleFile: !$('#useSingleFile').prop('checked')
+            };
+
+            var url = '@(Url.Action("WorkSheetFile", "WorkDaySheet"))?' + $.param(data);
+            console.log('get request to url '+ url)
+            window.open(url, '_blank');
+            
+        }
+
+
+    }
+
+    function getOfficeIDs() {
+        var ids = $('input:checkbox[name=officeId]:checked')
+            .map(function () {
+                var result = parseInt(this.id.substring(6));
+                return result;
+            })
+            .get();
+
+
+        console.log(ids);
+        return ids;
+    }
+
+    function getDateBoxValue(selector) {
+        console.log('original date = ' + $(selector).datebox('getValue'));
+        return $(selector).datebox('getValue');
+    }
+
+    function getWorkSheetPreview() {
+
+        var placeHolder = document.getElementById('chart-placeholder');
+
+        $(placeHolder).empty();
+
+        var ids = getOfficeIDs();
+
+        if (ids.length == 0) {
+            toastr.error("Ничего не выбрано!");
+            return;
+        }
+
+        var startDate = getDateBoxValue('#startDate');
+
+        var endDate = getDateBoxValue('#endDate');
+
+
+
+        previewWorkSheets(ids, startDate, endDate);
+
+
+
+        function previewWorkSheets(ids, startDate, endDate) {
+
+            var service = new AjaxService();
+
+            var data = {
+                ids: ids,
+                startDate: startDate,
+                endDate: endDate,
+                singleFile: !$('#useSingleFile').prop('checked')
+            };
+
+            //var url = '@(Url.Action("WorkSheetFile", "WorkDaySheet"))';
+            var url = '@(Url.Action("WorkSheets", "WorkDaySheet"))';
+            service.post(url, data,
+                function (d) {
+
+                    console.log('result = ');
+                    console.dir(d);
+                    drawChart(d, placeHolder);
+                },
+                function (errorMessage) { toastr.error(errorMessage); });
+        }
+
+
+    }
+
+</script>

@@ -1,0 +1,464 @@
+﻿@model TicketDataModel.Job
+
+<div id="job-details-wrapper" class="easyui-layout" data-options="fit:true">
+
+    <div data-options="region:'north'" id="job-number" style="height: 150px;">
+        <h1 style="display: inline">
+        @Model.Name
+        @if(!string.IsNullOrEmpty(Model.AdditionalNumber))
+                 {<span>-</span>@Html.DisplayNameFor(model => model.AdditionalNumber)}
+        @{var overDue = (Model.JobStatusID < 3 && Model.PlannedCompletionDate < DateTime.Now);}
+            @if(overDue)
+            {
+                <span>- Внимание! Заказ просрочен!</span>
+            }
+        </h1>
+        <!-- general information about customer --> 
+    
+        <ul class="horizontal-list">
+        
+                <li>
+                    @Html.DisplayNameFor(model => model.Customer.Name):
+                    <strong>@Html.DisplayFor(model => model.Customer.Name)</strong>
+                </li>
+                <li>
+                    @Html.DisplayNameFor(model => model.Customer.MarketingClass.Name):
+                    <strong>@Html.DisplayFor(model => model.Customer.MarketingClass.Name)</strong>
+                </li>
+            
+        </ul>
+        <br />
+        <ul class="horizontal-list">
+                <li class="small-font">
+                    <a href="@Model.Customer.Site">@Model.Customer.Site</a>
+                </li>
+                <li class="small-font">
+                    @Html.DisplayNameFor(model => model.ContactName):
+                    <strong>@Html.DisplayFor(model => model.ContactName)</strong>
+                </li>
+                <li class="small-font">
+                    @Html.DisplayNameFor(model => model.ContactTel):
+                    <strong>@Html.DisplayFor(model => model.ContactTel)</strong>
+                </li>
+                <li class="small-font">
+                    @Html.DisplayNameFor(model => model.ContactMail):
+                    <strong><a href="mailto: @Html.DisplayFor(model => model.ContactMail)">@Html.DisplayFor(model => model.ContactMail)</a></strong>
+                </li>
+        </ul>
+        <br />
+        <ul class="horizontal-list">
+                <li class="small-font">
+                    @Html.DisplayNameFor(model => model.Customer.ActivityType):
+                    <strong>@Html.DisplayFor(model => model.Customer.ActivityType)</strong>
+                </li>
+                <li class="small-font">
+                    @Html.DisplayNameFor(model => model.Customer.BranchOfEconomy):
+                    <strong>@Html.DisplayFor(model => model.Customer.BranchOfEconomy)</strong>
+                </li>
+        </ul>
+        @if (Model.MainParticipantID != null && (bool)ViewData["showParent"])
+        {
+                <p>Этот заказ поступил из подразделения @Model.ParentOfficeName от @Model.ParentManagerName. 
+                    @Ajax.ActionLink("Посмотреть родительский заказ", "Details", new { id=@Model.MainJobParticipant.Job.ID, goToparent = false },
+                    new AjaxOptions { InsertionMode=InsertionMode.Replace, LoadingElementId="progress", 
+                    OnFailure="showAjaxErrorMessage", UpdateTargetId = "job-details-wrapper"})</p>
+        }
+    </div>
+    
+    <div data-options= "region: 'west'" id="other-jobs-by-that-name-side-bar" style="width: 150px;">
+
+    @{var otherJobsBySameName = ViewData["OtherJobsBySameName"] as IEnumerable<TicketDataModel.Job>;
+      if (otherJobsBySameName.Count() > 0)
+      {
+                foreach (var j in otherJobsBySameName)
+                {
+                    var additionalClass = (j.ID == Model.ID) ? "selected-job-type" : "";
+                    <div>
+                        <ul class="job-type-list job-tab @additionalClass">
+                            <li><a href="#" onclick="showDetails('@j.ID'); return false;">@j.JobType.Name</a></li>
+                        
+                            <li>@j.LanguageDirection.Name</li>
+                        <li>@j.JobStatus.Name</li>
+                        <li>@j.PlannedCompletionDate</li>
+                        </ul>
+                    </div>
+                }
+                
+      }
+    }
+    </div>
+
+    <div id="job-info" data-options="region: 'center', collapsible: true, split:true" style="width: 200px;">
+        <div>
+            <div id="job-general-information">
+                <table class="properties-table">
+                <tr>
+                    <td>@Html.DisplayNameFor(model => model.JobType.Name)</td>
+                    <td>@Html.DisplayFor(model => model.JobType.Name)</td>
+                </tr>
+                <tr>
+                    <td>@Html.DisplayNameFor(model => model.LanguageDirection.Name)</td>
+                    <td>@Html.DisplayFor(model => model.LanguageDirection.Name)</td>
+                </tr>
+                <tr>
+                    <td>@Html.DisplayNameFor(model => model.JobStatus.Name)</td>
+                    <td>@Html.DisplayFor(model => model.JobStatus.Name)</td>
+                </tr>
+                <tr>
+                    <td>@Html.DisplayNameFor(model => model.PlannedCompletionDate)</td>
+                    <td>@Html.DisplayFor(model => model.PlannedCompletionDate)</td>
+                </tr>
+                @if(Model.SentToCustomerDate != null)
+                {
+                <tr>
+                    <td>@Html.DisplayNameFor(model => model.SentToCustomerDate)</td>
+                    <td>@Html.DisplayFor(model => model.SentToCustomerDate)</td>
+                </tr>
+                }
+                <tr>
+                    <td>Тематика</td>
+                    <td>@Html.DisplayFor(model => model.MainDomain.Name)<br />
+                    @Html.DisplayFor(model => model.SecondaryDomain.Name)</td>
+                </tr>
+                @if(Model.Publication != null)
+                {
+                    
+                    <tr>
+                        <td>
+                             @Html.DisplayNameFor(model => model.Publication)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(model => model.Publication)
+                        </td>
+                    </tr>
+                }
+                @if(Model.Notarized != null)
+                {
+                    <tr>
+                        <td>
+                             @Html.DisplayNameFor(model => model.Notarized)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(model => model.Notarized)
+                        </td>
+                    </tr>
+                }
+                <tr>
+                    <td>@Html.DisplayNameFor(model => model.Category.Name)</td>
+                    <td>@Html.DisplayFor(model => model.Category.Name)</td>
+                </tr>
+            </table>
+                <table class="properties-table">
+                    <tr>
+                        <td>@Html.DisplayNameFor(model => Model.CreatedDate)</td>
+                        <td>@Html.DisplayFor(model => Model.CreatedDate)<br />
+                                @Html.DisplayFor(model => Model.CreatedBy)</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.DisplayNameFor(model => model.TakeUpDate)</td>
+                        <td>@Html.DisplayFor(model => model.TakeUpDate)</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.DisplayNameFor(model => model.DateForEditor)</td>
+                        <td>@Html.DisplayFor(model => model.DateForEditor)</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.DisplayNameFor(model => model.PlannedCompletionDate)</td>
+                        <td>@Html.DisplayFor(model => model.PlannedCompletionDate)</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.DisplayNameFor(model => model.CompletedDate)</td>
+                        <td>@Html.DisplayFor(model => model.CompletedDate)</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.DisplayNameFor(model => model.SentToCustomerDate)</td>
+                        <td>@Html.DisplayFor(model => model.DateForEditor)</td>
+                    </tr>
+                </table>
+                <table class="properties-table">
+                    <tr>
+                        <td>@Html.DisplayNameFor(model => model.JobParticipantsMaxStatus.Name)</td>
+                        <td>@Html.DisplayFor(model => model.JobParticipantsMaxStatus.Name)</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.DisplayNameFor(model => model.OMKRequest.Name)</td>
+                        <td>@Html.DisplayNameFor(model => model.OMKRequest.Name)</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.DisplayNameFor(model => model.OCRRequest.Name)</td>
+                        <td><div style="position:relative;">
+                            @Html.DisplayFor(model => model.OCRRequest.Name)
+                                 <table class="details-table">
+                                    <tr>
+                                        <td>@Html.DisplayNameFor(model => model.OCRDatePlanned)</td>
+                                        <td>@Html.DisplayFor(model => model.OCRDatePlanned)</td>
+                                    </tr>
+                                    @if(Model.OCRDateActual != null)
+                                    {
+                                        <tr>
+                                            <td>@Html.DisplayNameFor(model => model.OCRDateActual)</td>
+                                            <td>@Html.DisplayFor(model => model.OCRDateActual)</td>
+                                        </tr>
+                                       <tr>
+                                           <td>@Html.DisplayNameFor(model => model.OCRDoneBy)</td>
+                                           <td>@Html.DisplayNameFor(model => model.OCRDoneBy)</td>
+                                       </tr>
+                                    }
+                                </table>
+                            </div>
+                            
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.DisplayNameFor(model => model.AnalysisRequestStatus.Name)</td>
+                        <td>
+                            <div style="position:relative;">
+                                @Html.DisplayNameFor(model => model.AnalysisRequestStatus.Name)
+                                 <table class="details-table">
+                                        <tr>
+                                            <td>@Html.DisplayNameFor(model => model.TermsRequired)</td>
+                                            <td>@Html.DisplayFor(model => model.TermsRequired)</td>
+                                        </tr>
+                                        <tr>
+                                            <td>@Html.DisplayNameFor(model => model.PretransRequired)</td>
+                                            <td>@Html.DisplayFor(model => model.PretransRequired)</td>
+                                        </tr>
+                                        <tr>
+                                            <td>@Html.DisplayNameFor(model => model.an_1)</td>
+                                            <td>@Html.DisplayFor(model => model.an_1) %</td>
+                                        </tr>
+                                        <tr>
+                                            <td>@Html.DisplayNameFor(model => model.an_2)</td>
+                                            <td>@Html.DisplayFor(model => model.an_2) %</td>
+                                        </tr>
+                                        <tr>
+                                            <td>@Html.DisplayNameFor(model => model.an_3)</td>
+                                            <td>@Html.DisplayFor(model => model.an_3) %</td>
+                                        </tr>
+                                        <tr>
+                                            <td>@Html.DisplayNameFor(model => model.an_4)</td>
+                                            <td>@Html.DisplayFor(model => model.an_4) %</td>
+                                        </tr>
+                                        <tr>
+                                            <td>@Html.DisplayNameFor(model => model.an_5)</td>
+                                            <td>@Html.DisplayFor(model => model.an_5) %</td>
+                                        </tr>
+                                        <tr>
+                                            <td>@Html.DisplayNameFor(model => model.an_6)</td>
+                                            <td>@Html.DisplayFor(model => model.an_6) %</td>
+                                        </tr>
+                                        <tr>
+                                            <td>@Html.DisplayNameFor(model => model.an_7)</td>
+                                            <td>@Html.DisplayFor(model => model.an_7) %</td>
+                                        </tr>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@Html.DisplayNameFor(model => model.AccountingStatus.Name)</td>
+                        <td>@Html.DisplayFor(model => model.AccountingStatus.Name)</td>
+                    </tr>
+                </table>
+                <table class="properties-table">
+                    <tr>
+                        <td>@Html.DisplayNameFor(model => model.CharCount)</td>
+                        <td>@Html.DisplayFor(model => model.CharCount)</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.DisplayNameFor(model => model.PagesCount)</td>
+                        <td>@Html.DisplayFor(model => model.PagesCount)</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.DisplayNameFor(model => model.CharCountWithSpaces)</td>
+                        <td>@Html.DisplayFor(model => model.CharCountWithSpaces)</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.DisplayNameFor(model => model.PagesCountWithSpaces)</td>
+                        <td>@Html.DisplayFor(model => model.PagesCountWithSpaces)</td>
+                    </tr>
+                    <tr>
+                        <td> @Html.DisplayNameFor(model => model.FinalCharCount)</td>
+                        <td>@Html.DisplayFor(model => model.FinalCharCount)</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.DisplayNameFor(model => model.FinalPagesCount)</td>
+                        <td>@Html.DisplayFor(model => model.FinalPagesCount)</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.DisplayNameFor(model => model.FinalCharCountWithSpaces)</td>
+                        <td>@Html.DisplayFor(model => model.FinalCharCountWithSpaces)</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.DisplayNameFor(model => model.FinalPagesCountWithSpaces)</td>
+                        <td>@Html.DisplayFor(model => model.FinalPagesCountWithSpaces)</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.DisplayNameFor(model => model.FinalPagesCountForCustomer)</td>
+                        <td>@Html.DisplayFor(model => model.FinalPagesCountForCustomer)</td>
+                    </tr>
+                </table>
+        
+                <table class="properties-table">
+                    <tr>
+                        <td>@Html.DisplayNameFor(model => model.Rate)</td>
+                        <td>@Html.DisplayFor(model => model.Rate)</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.DisplayNameFor(model => model.AmountAtJobCreate)</td>
+                        <td>@Html.DisplayFor(model => model.AmountAtJobCreate)</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.DisplayNameFor(model => model.AmountCash)</td>
+                        <td>@Html.DisplayFor(model => model.AmountCash)</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.DisplayNameFor(model => model.AmountFinal)</td>
+                        <td>@Html.DisplayFor(model => model.AmountFinal)</td>
+                    </tr>
+                </table>
+ 
+                <div id="comments" class="tile">
+                    <!-- comment -->
+                    <div class="label-field-pair"> 
+                    <div class="display-label">
+                         @Html.DisplayNameFor(model => model.Comment)
+                    </div>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Comment)
+                    </div>
+                    </div>
+                </div>
+                @if(Model.EditorialComments.Count() > 0)
+                {
+                <div id="editorial-comments">
+                    <h3>Комментарии эксперта</h3>
+                    <table>
+                        <tr>
+                            <td>Предлагаемый исполнитель</td>
+                            <td>Комментарий</td>
+                            <td>Дата</td>
+                            <td>Автор</td>
+                            <td>Дата изменений</td>
+                        </tr>
+    
+                    @foreach (var e in Model.EditorialComments)
+                    {
+                        <tr>
+                            <td>@e.TranslatorName</td>
+                            <td>@e.Text</td>
+                            <td>@e.CreatedDate</td>
+                            <td>@e.Author</td>
+                            <td>@e.ChangedDate</td>
+                        </tr>
+        
+                    }
+                    </table>
+                </div>
+                }
+
+                <div class="clear-fix"></div>
+
+                <div id="accounting-data" class="invisible tile"> <!-- will change this afterwards -->
+                    <!-- accounting info -->
+    
+                    <div class="display-label">
+                         @Html.DisplayNameFor(model => model.PaymentMethodString)
+                    </div>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.PaymentMethodString)
+                    </div>
+
+                    <div class="display-label">
+                         @Html.DisplayNameFor(model => model.InvoiceOrCashPaymentInfoString)
+                    </div>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.InvoiceOrCashPaymentInfoString)
+                    </div>
+
+                    <div class="display-label">
+                         @Html.DisplayNameFor(model => model.InvoiceDate)
+                    </div>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.InvoiceDate)
+                    </div>
+
+                    <div class="display-label">
+                         @Html.DisplayNameFor(model => model.InvoicePaidDate)
+                    </div>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.InvoicePaidDate)
+                    </div>
+
+                    <!-- what's this?-->
+    
+                    <div class="display-label">
+                         @Html.DisplayNameFor(model => model.SpecificationNumberString)
+                    </div>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.SpecificationNumberString)
+                    </div>
+
+                    <div class="display-label">
+                         @Html.DisplayNameFor(model => model.SpecificationDate)
+                    </div>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.SpecificationDate)
+                    </div>
+                </div>
+
+                <div id="sonstiges" class="invisible"> <!-- will fix this later--> 
+            <div class="display-label">
+                 @Html.DisplayNameFor(model => model.Contract)
+            </div>
+            <div class="display-field">
+                @Html.DisplayFor(model => model.Contract)
+            </div>
+        </div>
+                <!-- additional data that may be crucial are: 
+                    who processed requests, 
+                    who created & changed job -->
+                <!-- for participants: who approved / disapproved participants --> 
+
+                <div class="clear-fix"></div>
+
+        <div id="Path" class="tile">
+            <div class="display-label">
+                 @Html.DisplayNameFor(model => model.FilePath)
+            </div>
+            <div class="display-field">
+                @Html.DisplayFor(model => model.FilePath)
+            </div>
+            <div>
+                <ul id="file-tree">
+                    @{
+                        var fileTree = new TicketManager.FileTree();
+                        var files = (List<TicketDataModel.JobFile>)ViewData["files"];
+                        fileTree.CreateTreeFromPaths(files);
+                        var node = fileTree.RootNode;
+                        
+                        @Html.Partial("FileNodeList", node)
+
+                        }
+                    
+                </ul>
+            </div>
+    
+        </div>
+        </div>
+        </div>
+            <!-- participants -->
+    </div>
+    <div data-options="region: 'east', collapsible: true, split: true" style="width: 400px; height: 100%;">
+        <table id="job-participants" style="width: 100%; height: 100%;">
+        </table>
+        
+        </div>
+    
+    
+</div>
+<div id="hidden-job-id" class="invisible">
+    @Model.ID
+</div>
+
+

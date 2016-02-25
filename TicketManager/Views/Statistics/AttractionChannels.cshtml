@@ -1,0 +1,53 @@
+﻿@model TicketManager.Controllers.StatisticsController.AttractionChannelInfo
+
+<h2>@ViewBag.Title</h2>
+
+@{var startDate = (DateTime)ViewData["startDate"]; var endDate = (DateTime)ViewData["endDate"];}
+<div class="clear-fix" style="width: 100%">
+    <div id="piechart1" style="width: 48%; height: 300px; float: left;">
+    </div>
+    <div id="piechart2" style="width: 48%; height: 300px; float: left">
+    </div>
+
+</div>
+<div id="line-chart" style="width: 98%; height: 400px;">
+     
+</div>
+<h1>Физические лица</h1>
+
+@Html.Partial("AttractionChannelsTbl", Model.Physicals, new ViewDataDictionary { { "TableID", "physicalsTable" } })
+
+<h1>Юридические лица</h1>
+@Html.Partial("AttractionChannelsTbl", Model.LegalEntities, new ViewDataDictionary { { "TableID", "legalsTable" } })
+
+<script>
+
+    (function () {
+        var chart1 = new ChartArea('Физические лица', 'physicalsTable', 'piechart1');
+        chart1.createChartArea();
+
+        var chart2 = new ChartArea('Юридические лица', 'legalsTable', 'piechart2');
+        chart2.createChartArea();
+
+        
+        var officeID = ('@(ViewData["officeID"].ToString())').toString();
+        
+        var config = {
+
+            data: {
+                officeID : officeID,
+                startDate: '@(startDate.ToString("dd.MM.yyy"))',
+                endDate: '@(endDate.ToString("dd.MM.yyy"))'
+            },
+
+            sourceURL: '@Url.Action("SalesLineChart")',
+            id : 'line-chart'
+        };
+
+        (new LineChartArea(config));
+ 
+        
+
+    })();
+
+</script>

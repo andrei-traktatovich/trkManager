@@ -1,0 +1,392 @@
+﻿<link href="~/Content/incomeAndExpense.css" rel="stylesheet" />
+<script>
+    var getContextURL = '@Url.Action("GetContext")';
+    var IncomesAndExpensesURL = '@Url.Action("IncomesAndExpenses")';
+    var incomeUpdateURL = '@Url.Action("UpdateIncome")';
+    var expenseUpdateURL = '@Url.Action("UpdateExpense")';
+    var deleteURL = '@Url.Action("Delete")';
+</script>
+<div class="container">
+
+    @*Header with search panel*@
+    <!-- ko ifnot : isViewEmpty -->
+    <div class="row">
+        <div class="col-md-12">
+            <h4>Приход & расход <span data-bind="hidden: context.canSelectOffice, text: context.myOfficeName"></span>
+            </h4>
+        </div>
+
+    </div>
+    <div class="row form-inline well" @*data-bind="visible: !isViewDirty()"*@>
+
+
+        @*OFFICE NAME*@
+         
+
+            <select class="form-control" data-bind="visible: context.canSelectOffice,
+    options: context.offices, optionsText: 'name', optionsValue: 'id', value: context.myOfficeId">
+            </select>
+         
+        @*MONTH*@
+         
+            <select class="form-control" data-bind="visible: context.canSelectDate, options: context.months, optionsText: 'name', optionsValue: 'id',
+    value: month">
+            </select>
+         
+        @*YEAR*@
+         
+            <select class="form-control" data-bind="visible: context.canSelectDate, options: context.years, value: year"></select>
+         
+
+        @*BUTTON*@
+         
+            <button class="btn btn-sm btn-info" data-bind="visible: context.canSelectDate, click: function () { loadData(); }">
+                <span class="glyphicon glyphicon-search"></span>Искать / обновить</button>
+         
+
+         
+            <button class="btn btn-sm btn-default pull-right" data-target="#modal-info" data-toggle="modal"><span class="glyphicon glyphicon-question-sign">Как использовать </span></button>
+         
+    </div>
+
+    @*save*@
+    @*<button class="btn btn-info" title="Сохранить" data-bind="click: reloadData">
+        <span class="glyphicon glyphicon-refresh"></span>&nbsp;Обновить
+    </button>*@
+
+
+    @*<button class="btn btn-danger" title="Сохранить" data-bind="visible: ($root.isViewDirty() && !$root.isItemEditing()), click: saveData">
+        <span class="glyphicon glyphicon-floppy-save"></span>&nbsp;Сохранить
+    </button>*@
+
+    @*results*@
+
+
+
+    <div data-bind="with: view">
+        <div class="row" @*data-bind="hidden: $root.isViewDirty"*@>
+            <div class="col-md-6">
+                <h4>На начало периода:&nbsp; 
+                <strong><span data-bind="money: openingBalance"></span></strong>
+                    <small>Всего доходы:&nbsp;
+                        <strong><span data-bind="money: totalIncomes"></span></strong>
+                    </small>
+                </h4>
+            </div>
+            <div class="col-md-6">
+                <h4>На конец периода:&nbsp;
+                    <strong><span data-bind="money: closingBalance"></span></strong>
+                    <small>Всего расходы:&nbsp;
+                    <strong><span data-bind="money: totalExpenses"></span></strong></small>
+                </h4>
+
+            </div>
+        </div>
+        <div class="row" data-bind="visible: $root.isViewDirty">
+            <h2 data-bind="visible: $root.isViewDirty">Обновите, чтобы пересчитать баланс</h2>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Приход</h3>
+            </div>
+            <div class="col-md-6">
+                <h3>Расход</h3>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="table-scroll-area" style="font-size: large;">
+
+                <div class="row">
+                    @*INCOME INFO GOES HERE IN AN ACCORDION*@
+                    <div data-bind="foreach: days" class="panel-group">
+                        <div class="panel panel-default">
+                            <div class="panel-heading bg-info align-middle" data-bind="accordion: openState, click: toggle">
+                                <div class="row panel-title" style="cursor: pointer;">
+                                    <div class="col-md-1 chevron glyphicon glyphicon-chevron-right"></div>
+                                    <div class="col-md-3"><small>(+)<span data-bind="money: totalIncomes" /></small></div>
+                                    @*data-bind="money: totalIncomes*@
+
+                                    <div class="col-md-4"><span class="strong" data-bind="date: date"></span></div>
+                                    <div class="col-md-4"><small>(-)<span class="small" data-bind="money: totalExpenses"></span></small></div>@**@
+
+                                </div>
+                            </div>
+
+                            <div class="panel-body">
+                                <div class="row">
+                                     
+                                    <div class="col-md-12">
+                                        <h3>Приход</h3>
+                                        <div class="bg-info">
+                                            <table class="table table-condensed text-center table-bordered table-striped" style="width: 100%;">
+
+                                                <thead>
+                                                    <tr class="text-center">
+                                                        <th class="text-center actioncell"></th>
+
+                                                        <!-- ko if: $root.context.canSelectOffice -->
+                                                        <th class="text-center">Офис</th>
+                                                        <!-- /ko -->
+
+                                                        <th class="text-center">№ прих.</th>
+                                                        <th class="text-center">От кого</th>
+                                                        <th class="text-center">Сумма</th>
+                                                        <th class="text-center">Кто</th>
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody data-bind="foreach: incomes">
+
+                                                    @*an item is not visible if it is deleted. It is dirty if it is new or modified*@
+                                                    <!-- ko ifnot: isEditing -->
+                                                    <tr data-bind="hidden: isDeleted, css: { dirtyitem: isDirty }">
+                                                        <td class="actioncell">
+                                                            <div data-bind="visible: isEditable">
+                                                                <a href="#" data-bind="click: edit" class="glyphicon glyphicon-pencil"
+                                                                    title="Редактировать"></a>
+                                                                <a href="#" data-bind="click: remove" class="glyphicon glyphicon-trash"
+                                                                    title="Удалить"></a>
+                                                            </div>
+                                                        </td>
+
+                                                        <!-- ko if: $root.context.canSelectOffice -->
+                                                        <td>
+                                                            <span data-bind="text: officeName, click: tryEdit"></span>
+                                                        </td>
+                                                        <!-- /ko -->
+
+                                                        <td data-bind="text: noteNo, click: tryEdit"></td>
+                                                        <td data-bind="text: payerName, tooltip: text, click: tryEdit"></td>
+                                                        <td data-bind="money: amount, click: tryEdit"></td>
+                                                        <td data-bind="text: author, click: tryEdit"></td>
+                                                    </tr>
+                                                    <!-- /ko -->
+                                                    <!-- ko if : isEditing -->
+                                                    <tr data-bind="hidden: isDeleted, css: { error: !isValid() }">
+                                                        <td class="actioncell">
+                                                            <a href="#" data-bind="visible: isValid, click: commit"
+                                                                class="glyphicon glyphicon-ok btn btn-sm btn-success"
+                                                                title="Кликните, чтобы подтвердить, что редактирование строки закончено"></a>
+                                                        </td>
+
+                                                        <!-- ko if: $root.context.canSelectOffice -->
+                                                        <td>
+                                                            <select class="form-control control-sm" disabled="disabled" data-bind="options: $root.context.offices,
+    optionsText: 'name', optionsValue: 'id', value: officeId">
+                                                            </select>
+                                                        </td>
+                                                        <!-- /ko -->
+
+                                                        <td data-bind="text: noteNo"></td>
+                                                        <td>
+                                                            <input type="text" class="form-control control-sm" data-bind="value: payerName, event: { keyup: tryCommit }" />
+                                                        </td>
+                                                        <td>
+                                                            <input type="text" class="form-control control-sm" data-bind="numeric: amount, event: { keyup: tryCommit }" />
+                                                        </td>
+                                                        <td data-bind="text: author"></td>
+                                                    </tr>
+                                                    <!-- /ko -->
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr>
+                                                        <td colspan="2">
+                                                            <div class="pull-left" data-bind="ifnot: $root.isItemEditing">
+                                                                <button class="btn btn-success align-left btn-sm"
+                                                                    data-bind='click: addIncomeItem'
+                                                                    title="Добавить приход">
+                                                                    <span class="glyphicon glyphicon-plus">Добавить приход</span>
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                        <td colspan="4">
+                                                            <h3 class="text-right">Итого <span data-bind="money: totalIncomes"></span></h3>
+                                                        </td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+
+
+                                    </div>
+                                    <hr />
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h3>Расход</h3>
+                                        <div class="bg-info">
+                                            <table class="table table-condensed text-center table-bordered table-striped" style="width: 100%;">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="text-center actioncell"></th>
+
+                                                        <!-- ko if: $root.context.canSelectOffice -->
+                                                        <th class="text-center">Офис</th>
+                                                        <!-- /ko -->
+
+                                                        <th class="text-center">Вид</th>
+                                                        <th class="text-center">№ расх.</th>
+                                                        <th class="text-center">Текст</th>
+                                                        <th class="text-center">Сумма</th>
+                                                        <th class="text-center">Кто</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody data-bind="foreach: expenses">
+
+                                                    @*an item is not visible if it is deleted. It is dirty if it is new or modified*@
+                                                    <!-- ko ifnot: isEditing -->
+                                                    <tr data-bind="hidden: isDeleted, css: { dirtyitem: isDirty }">
+                                                        <td class="actioncell">
+                                                            <div data-bind="visible: isEditable">
+                                                                <a href="#" data-bind='click: edit'
+                                                                    class="glyphicon glyphicon-pencil"
+                                                                    title="Редактировать"></a>
+                                                                <a href="#" data-bind="click: remove" class="glyphicon glyphicon-trash"
+                                                                    title="Удалить"></a>
+                                                            </div>
+                                                        </td>
+                                                        <!-- ko if: $root.context.canSelectOffice -->
+                                                        <td data-bind="text: officeName"></td>
+                                                        <!-- /ko -->
+
+                                                        <td data-bind="text: typeName, click: tryEdit"></td>
+                                                        <td data-bind="text: noteNo, click: tryEdit"></td>
+                                                        <td data-bind="text: text, click: tryEdit"></td>
+                                                        <td data-bind="money: amount, click: tryEdit"></td>
+                                                        <td data-bind="text: author"></td>
+                                                    </tr>
+                                                    <!-- /ko -->
+                                                    <!-- ko if: isEditing -->
+                                                    <tr data-bind="css: { error: !isValid() }" class="control-sm">
+                                                        <td>
+                                                            <a href="#" data-bind="visible: isValid, click: commit"
+                                                                class="glyphicon glyphicon-ok btn btn-sm btn-success"
+                                                                title="Кликните, чтобы подтвердить, что редактирование строки закончено"></a>
+                                                        </td>
+
+                                                        <!-- ko if: $root.context.canSelectOffice -->
+                                                        <td>
+                                                            <select class="form-control control-sm" disabled="disabled" data-bind="if: $root.context.canSelectOffice,
+    options: $root.context.offices,
+    optionsText: 'name', optionsValue: 'id', value: officeId, optionsCaption: 'Выберите офис'">
+                                                            </select>
+                                                        </td>
+                                                        <!-- /ko -->
+
+                                                        <td>
+                                                            <select class="form-control control-sm autofocusable" data-bind="foreach: $root.context.expenseGroups, value: typeId">
+                                                                <optgroup data-bind="attr: { label: name }, foreach: items">
+                                                                    <option data-bind="text: name, option: $data.id, optionsCaption: 'Выберите вид'"></option>
+                                                                </optgroup>
+                                                            </select>
+                                                        </td>
+                                                        <td data-bind="text: noteNo"></td>
+                                                        <td>
+                                                            <input type="text" class="form-control control-sm" data-bind="value: text, event: { keyup: tryCommit }" placeholder="Текст..." />
+                                                        </td>
+                                                        <td>
+                                                            <input type="text" class="form-control control-sm" data-bind="numeric: amount, event: { keyup: tryCommit }" placeholder="Сумма..." />
+                                                        </td>
+                                                    </tr>
+                                                    <!-- /ko -->
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr>
+                                                        <td colspan="2">
+                                                            @*button to add expense item*@
+                                                            <div class="pull-left" data-bind="ifnot: $root.isItemEditing">
+                                                                <button class="btn btn-success align-right btn-sm"
+                                                                    title="Добавить расход" data-bind="click: addExpenseItem">
+                                                                    <span class="glyphicon glyphicon-plus">Добавить расход</span>
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                        <td colspan="5">
+                                                            <h3 class="text-right">Итого <span data-bind="money: totalExpenses"></span></h3>
+                                                        </td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <!-- /ko -->
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modal-info" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Как использовать</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Слева - информация о <span class="strikethrough">преступлениях</span> поступлениях, справа - информация о расходах. Если слева от записи о поступлениях или расходах есть кнопки 
+              с изображением <span class="glyphicon glyphicon-pencil"></span>или 
+              <span class="glyphicon glyphicon-trash"></span>, такую запись можно начать редактировать или удалить, кликнув на соответствующую кнопку. Кроме того, редактируемую
+              запись можно начать редактировать, кликнув непосредственно на нее.
+                </p>
+                <p>Не редактируются записи о поступлениях, на которые есть приходник. Если приходника нет, запись можно редактировать.</p>
+                <p>При редактировании записи о расходах нужно выбрать соответствующий тип расхода и указать дополнительную информацию в поле "текст"</p>
+                <p>После редактирования нужно кликнуть <span class="glyphicon glyphicon-ok btn btn-sm btn-success"></span>слева от редактируемой записи.</p>
+                 
+                <h2>Права</h2>
+                <table class="table table-condensed table-striped">
+                    <thead>
+                        <tr>
+                            <th>Роль</th>
+                            <th>Права
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Менеджер</strong></td>
+                            <td>Редактирует данные только в текущем офисе и только за сегодняшний день</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Руководитель офиса</strong></td>
+                            <td>Редактирует данные только в своем офисе, но за любой период</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Администратор</strong></td>
+                            <td>Редактирует и просматривает данные любого офиса за любой период, получает сводные отчеты за день и за месяц.</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+
+
+@*Incomes and expenses page*@
+<script src="~/Scripts/IncomeAndExpense/ViewModelDefinition.js"></script>
+<script src="~/Scripts/IncomeAndExpense/IncomeAndExpenseUtils.js"></script>
+<script src="~/Scripts/IncomeAndExpense/Presenter/incomeAndExpense.js"></script>

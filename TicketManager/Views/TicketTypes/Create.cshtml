@@ -1,0 +1,80 @@
+﻿@model TicketDataModel.TicketType
+
+@{
+    ViewBag.Title = "Новый тип заявки";
+}
+
+<h2>Create</h2>
+
+
+
+@using(Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+@Html.ValidationSummary(true)
+<fieldset>
+    <legend>Новый тип заявки</legend>
+
+    <div class="editor-label">
+        Название
+    </div>
+    <div class="editor-field">
+        @Html.EditorFor(model => model.Name)
+        @Html.ValidationMessageFor(model => model.Name)
+    </div>
+
+    <div class="editor-label">
+        Действительно для подразделений
+    </div>
+    <div class="editor-field" style="float: left;">
+        <div style="float: left; width: 200px;">
+            <p>
+                Вы выбрали:
+            </p>
+            <div id="selectiondisplay">
+            </div>
+        </div>
+        @Html.ListBox("officesList", ViewData["office"] as MultiSelectList, new { Style = "height: 300px;", OnChange = "showCurrentSelection(); return false;" })
+        <button onclick="selectAll(); return false;">Выбрать все</button>
+        <button onclick="deselectAll(); return false;">Снять выделение</button>
+        <p>
+            <input type="submit" value="Создать" onclick="submitNewType" />
+        </p>
+    </div>
+
+
+
+</fieldset>
+
+}
+<div>
+    @Html.ActionLink("Назад к списку", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+<script>
+    function selectAll() {
+        selectMultiListBox(true);
+    }
+    function deselectAll() {
+        selectMultiListBox(false);
+    }
+    function selectMultiListBox(value) {
+        var el = $('#officesList').children();
+        el.each(function () { $(this).attr('selected', value); });
+        showCurrentSelection();
+    }
+
+    function showCurrentSelection() {
+        var el = $('#officesList').children();
+        var text = "";
+        el.each(function () {
+            if ($(this).attr('selected')) {
+                text = text + "<div class='brick'>" + $(this).text() + "</div>";
+            }
+        });
+        $('#selectiondisplay').html(text);
+    }
+</script>

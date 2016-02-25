@@ -1,0 +1,1063 @@
+﻿@{
+    ViewBag.Title = "Статистика оценок";
+}
+<script>
+    var getGradeURL = '@Url.Content(Url.Action("GetGrade"))',
+        getGradesURL = '@Url.Content(Url.Action("Details"))',
+        updateGradeURL = '@Url.Content(Url.Action("UpdateGrade"))';
+</script>
+
+<div class="container">
+    <h2>Статистика оценок</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="panel panel-info">
+                <div class="panel-body">
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            Редактор @Html.DropDownList("DrDnEditors")</li>
+
+                        <li class="list-group-item">Выберите из списка 
+                            @Html.DropDownList("DrDnTranslators")
+                            <br />
+                            или <input type="text" placeholder="Имя содержит ..." id="txtFilter" />
+                        </li>
+                        
+                        <li class="list-group-item">За период с&nbsp;@Html.TextBox("TxtStartDate", ViewData["StartDate"], new { @class = "easyui-datebox date-picker", data_options = "formatter:russianFormatter,parser:datetimeParser" })&nbsp;по
+        @Html.TextBox("TxtEndDate", ViewData["EndDate"], new { @class = "easyui-datebox date-picker", data_options = "formatter:russianFormatter,parser:datetimeParser" })
+                        </li>
+                        
+                        <li class="list-group-item">
+                       
+                                <select id="selectStaff">
+                                    <option value="-1">Все</option>
+                                    <option value="1">Штат</option>
+                                    <option value="2">Внештат</option>
+                                </select>
+                      
+                        </li>
+                        <li class="list-group-item">
+                            <ul class="list-group" id="active-statuses">
+                                <li class="list-group-item">
+
+                                    <input type="checkbox" checked id="chkUnapproved"/>Непроверен
+                                </li>
+                                <li class="list-group-item">
+                                    <input type="checkbox" checked id="chkNew"/>Новый
+                                </li>
+                                <li class="list-group-item">
+                                    <input type="checkbox" checked id="chkActive"/>Активный
+                                </li>
+                                <li class="list-group-item">
+                                    <input type="checkbox" checked id="chkBlackList"/>Резерв
+                                </li>
+                                <li class="list-group-item">
+                                    <input type="checkbox" checked id="chekReserve"/>Черный список
+                                </li>
+                            </ul>
+                            <a href="#" class="btn btn-default" 
+                                onclick="$('#active-statuses :checkbox').attr('checked','checked'); return false;">Выбрать все</a>
+                        </li>
+                        <li class="list-group-item">
+                            <span>Языковая пара @Html.DropDownList("languageName")</span>
+
+                        </li>
+                        <li class="list-group-item">
+                            Сортировать по
+                            <select id="selectSort">
+                                <option value="name">алфавиту</option>
+                                <option value="avgAsc">среднему баллу (убывание)</option>
+                                <option value="avgDesc">среднему баллу (возрастание)</option>
+                            </select>
+
+                        </li>
+                        <li class="list-group-item">
+                            <input type="checkbox" id="chkShowOrphans"/>Только с левыми тематиками
+                        </li>
+                        <li class="list-group-item" style="text-align: right">
+                            <button id='search-button' class="btn btn-primary">Поиск</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="paginator"></div>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-md-12">
+
+                    <div id="grade-search-results">
+
+                        <table class="table" style="width: 600px;">
+                            <thead>
+                                <tr>
+                                    <th>Имя</th>
+                                    <th>Всего оценок</th>
+                                    <th>Средний балл</th>
+                                </tr>
+                            </thead>
+                            <tbody data-bind="foreach: currentPage">
+                                <tr>
+                                    <td>
+                                        <a href="#grades-popup" data-bind="text: trname, click: $root.showGrades" role="button" data-toggle="modal"></a>
+                                    </td>
+                                    <td data-bind="text: gradeCount"></td>
+                                    <td>
+
+                                        <div data-bind="text: average, css: { trendminus: trend() == 'trendminus', trendplus: trend() == 'trendplus' }"></div>
+
+
+                                        @*                                <div class="modal modal-large fade" data-bind="attr: { id: 'tr' + $index() }" role="dialog">
+                                    <div class="modal-dialog modal-large ">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h4 data-bind="text: trname"></h4>
+                                            </div>
+                                            <div class="modal-body" style="overflow: scroll;">
+                                                <form class="form-horizontal">
+
+                                                    <table class="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Ред</th>
+                                                                <th>Заказ</th>
+                                                                <th>Направление</th>
+                                                                <th>Тематика</th>
+                                                                <th>Тематика2</th>
+                                                                <th>Оценка</th>
+                                                                <th>Дата</th>
+                                                                <th>Факт</th>
+                                                                <th>Терм.</th>
+                                                                <th>Стиль</th>
+                                                                <th>Смысл</th>
+                                                                <th>Орф.</th>
+                                                                <th>Грам.</th>
+                                                                <th>Треб.</th>
+                                                                <th>Пропуски</th>
+                                                                <th>Срок</th>
+                                                                <th>формат</th>
+                                                                <th style="width: 45%">Комментарий</th>
+                                                                <th>Автор</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody data-bind="foreach: grades">
+                                                            <tr data-bind="template: { name: $data.gradeTemplate }"></tr>
+                                                        </tbody>
+                                                    </table>
+                                                </form>
+
+
+
+                                            </div>
+                                            <div class="modal-footer">
+
+                                                <a href="#" class="btn btn-primary" data-dismiss="modal">Закрыть</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>*@
+                                    </td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/html" id="normalmode">
+
+    <td>
+        <img src="../Images/edit.png" data-bind="click: beginEdit" class="easyui-tooltip" title="Редактировать" />
+
+    </td>
+    <td data-bind="text: JobNo"></td>
+    <td data-bind="text: Direction"></td>
+    <td data-bind="css: { 'domain-warning': !IsDomain1Registered() }">
+        <div><span data-bind="text: Domain1"></span>
+            <button class="btn btn-xs btn-success" title="Нажмите, чтобы добавить эту тематику в рабочие тематики исполнителя" data-bind="visible: !IsDomain1Registered(), click: function(data) { $root.addOrUpdateTranslatorDomain1($parent, data); }">+</button>
+        </div>
+    </td>
+    <td data-bind="css: { 'domain-warning': !IsDomain2Registered() }">
+        <div>
+            <span data-bind="text: Domain2"></span>
+            <button class="btn btn-xs btn-success" 
+                title="Нажмите, чтобы добавить эту тематику в рабочие тематики исполнителя" 
+                data-bind="visible: !IsDomain2Registered(), click: function(data) { $root.addOrUpdateTranslatorDomain2($parent, data); }">+</button>
+        </div>
+    </td>
+    <td data-bind="text: Grade"></td>
+    <td data-bind="text: GradeDate"></td>
+    <td data-bind="css: { grade2: Fact() == 2, grade1: Fact() == 1 }"></td>
+    <td data-bind="css: { grade2: Term() == 2, grade1: Term() == 1 }"></td>
+    <td data-bind="css: { grade2: Style() == 2, grade1: Style() == 1 }"></td>
+    <td data-bind="css: { grade2: Sense() == 2, grade1: Sense() == 1 }"></td>
+    <td data-bind="css: { grade2: Spelling() == 2, grade1: Spelling() == 1 }"></td>
+    <td data-bind="css: { grade2: Grammar() == 2, grade1: Grammar() == 1 }"></td>
+    <td data-bind="css: { grade2: Requirements() == 2, grade1: Requirements() == 1 }"></td>
+    <td data-bind="css: { grade2: Gaps() == 2, grade1: Gaps() == 1 }"></td>
+    <td data-bind="css: { grade2: Delay() == 2, grade1: Delay() == 1 }"></td>
+    <td data-bind="css: { grade2: FormatError() == 2, grade1: FormatError() == 1 }"></td>
+    <td data-bind="text: Comment"></td>
+    <td data-bind="text: Author"></td>
+</script>
+<script type="text/html" id="editmode">
+
+    <td>
+
+        <div>
+            <img src="../Images/discard.png" data-bind="click: discard" class="easyui-tooltip" title="Отменить" /><br />
+        </div>
+        <div>
+            <hr />
+            <img src="../Images/save.png" data-bind="click: commit" class="easyui-tooltip" title="Сохранить" />
+        </div>
+
+    </td>
+    <td data-bind="text: JobNo"></td>
+    <td data-bind="text: Direction"></td>
+    <td data-bind="text: Domain1"></td>
+    <td data-bind="text: Domain2"></td>
+    <td data-bind="text: Grade"></td>
+    <td data-bind="text: GradeDate"></td>
+    <td colspan="5">
+        <form class="form-inline">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label>Факт.</label><select data-bind="template: { name: 'error-selector' }, value: Fact, event: { change: recalculate }" /><br />
+
+                        <label>Терм.</label><select data-bind="template: { name: 'error-selector' }, value: Term, event: { change: recalculate }" /><br />
+
+                        <label>Стиль</label><select data-bind="template: { name: 'error-selector' }, value: Style, event: { change: recalculate }" /><br />
+
+                        <label>Смысл</label><select data-bind="template: { name: 'error-selector' }, value: Sense, event: { change: recalculate }" /><br />
+
+                        <select data-bind="template: { name: 'error-selector' }, value: Spelling, event: { change: recalculate }" />
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <span>Грамм.</span><select data-bind="template: { name: 'error-selector' }, value: Grammar, event: { change: recalculate }" /><br />
+
+                        <span>Треб.</span><select data-bind="template: { name: 'error-selector' }, value: Requirements, event: { change: recalculate }" /><br />
+
+                        <span>Пропуски</span><select data-bind="template: { name: 'error-selector' }, value: Gaps, event: { change: recalculate }" /><br />
+
+                        <span>Сроки</span><select data-bind="template: { name: 'error-selector' }, value: Delay" /><br />
+
+                        <span>Формат</span><select data-bind="template: { name: 'error-selector' }, value: FormatError" />
+                    </div>
+                </div>
+            </div>
+        </form>
+    </td>
+
+    <td colspan="5">
+        <textarea data-bind="value: Comment" autofocus="autofocus" class="form-input" tabindex="1"></textarea>
+    </td>
+    <td data-bind="text: Author"></td>
+
+
+</script>
+<script type="text/html" id="error-selector">
+
+    <option value="0">нет</option>
+    <option value="1" class="grade1">негр.</option>
+    <option value="2" class="grade2">груб.</option>
+
+
+</script>
+
+<!-- popup -->
+
+<div id="grades-area">
+    <div class="modal modal-large fade" id="grades-popup" role="dialog">
+        <div class="modal-dialog modal-large ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4><span data-bind="text: selected().trname"></span>
+                        &nbsp;
+                        <span class="small">
+                            <span>Всего оценок: </span>
+                            <span data-bind="text: selected().grades && selected().grades() && selected().grades().length || 0"></span>
+                        </span>
+                        
+                    </h4>
+                </div>
+                <div class="modal-body" style="overflow: scroll;" id="grades-table">
+                    <form class="form-horizontal">
+
+                        <table class="table" >
+                            <thead>
+                                <tr>
+                                    <th>Ред</th>
+                                    <th>Заказ</th>
+                                    <th>Направление</th>
+                                    <th>Тематика</th>
+                                    <th>Тематика2</th>
+                                    <th>Оценка</th>
+                                    <th>Дата</th>
+                                    <th>Факт</th>
+                                    <th>Терм.</th>
+                                    <th>Стиль</th>
+                                    <th>Смысл</th>
+                                    <th>Орф.</th>
+                                    <th>Грам.</th>
+                                    <th>Треб.</th>
+                                    <th>Пропуски</th>
+                                    <th>Срок</th>
+                                    <th>формат</th>
+                                    <th style="width: 45%">Комментарий</th>
+                                    <th>Автор</th>
+                                </tr>
+                            </thead>
+                            <tbody data-bind="foreach: selected().grades">
+                                <tr data-bind="template: { name: gradeTemplate }"></tr>
+                            </tbody>
+                        </table>
+                    </form>
+
+
+
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-default"  onclick="pasteGrade(); return false;">Копировать</a>
+                    <a href="#" class="btn btn-default"  onclick="printGrade(); return false;">Печать</a>
+                    <a href="#" class="btn btn-primary" data-dismiss="modal">Закрыть</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+    function printGrade() {
+        
+        $('#grades-table').print();
+    }
+
+    function pasteGrade() {
+        var w = window.open();
+        var html = $("#grades-table").html();
+
+        $(w.document.body).html(html);
+        
+    }
+
+    function GradeLookup(url) {
+
+        this.url = url;
+
+        var self = this,
+
+            mapping = {
+                'currentPage': {
+                    create: function (options) {
+
+                        var data = options.data;
+                        /*
+                        data.grades.forEach(function (grade) {
+
+                            grade.isEditing = ko.observable(false);
+
+                            grade.isDirty = ko.observable(false);
+
+                            grade.beginEdit = function (grade) {
+
+                                grade.isEditing(true);
+                                grade.isDirty(false);
+                                if (!self.backup)
+                                    self.backup = {};
+                                self.backup[grade.ID()] = {
+                                    Grade: grade.Grade(),
+                                    Grammar: grade.Grammar(),
+                                    Spelling: grade.Spelling(),
+                                    Fact: grade.Fact(),
+                                    Term: grade.Term(),
+                                    Sense: grade.Sense(),
+                                    Gaps: grade.Gaps(),
+                                    Requirements: grade.Requirements(),
+                                    Style: grade.Style(),
+                                    Delay: grade.Delay(),
+                                    FormatError: grade.FormatError(),
+                                    BonusForQuality: grade.BonusForQuality(),
+                                    BonusToNative: grade.BonusToNative(),
+                                    Comment: grade.Comment()
+                                };
+                                $(document).off('focusin.modal');
+                                //$('.modal textarea').removeAtrr('disabled');
+                                $('.modal textarea').attr('tabindex', "1");
+
+                            };
+
+                            grade.gradeTemplate = function (item) { var result = item.isEditing() == true ? 'editmode' : 'normalmode'; console.log('result = ' + result); return result; };
+
+                            grade.recalculate = function (item) {
+                                console.log('recalc');
+                                console.log(item.isDirty());
+
+                                var down = parseInt(item.Grammar()) + parseInt(item.Spelling()) + parseInt(item.Fact())
+                                    + parseInt(item.Term()) + parseInt(item.Style()) + parseInt(item.Sense()) + parseInt(item.Gaps())
+                                    + parseInt(item.Requirements());
+                                var up = parseInt(item.BonusForQuality()) + parseInt(item.BonusToNative());
+                                var score = 8 - down + up;
+                                item.Grade(score);
+                                item.isDirty(true);
+                            };
+
+                            grade.discard = function (grade) {
+                                if (self.backup && self.backup[grade.ID()]) {
+                                    grade.isDirty(false);
+                                    var backup = self.backup[grade.ID()];
+                                    console.log('backup for id = ' + grade.ID());
+                                    console.dir(backup);
+                                    grade.Grade(backup.Grade);
+                                    grade.Grammar(backup.Grammar);
+                                    grade.Spelling(backup.Spelling),
+                                    grade.Fact(backup.Fact);
+                                    grade.Term(backup.Term);
+                                    grade.Sense(backup.Sense);
+                                    grade.Gaps(backup.Gaps);
+                                    grade.Requirements(backup.Requirements),
+                                    grade.Style(backup.Style),
+                                    grade.Delay(backup.Delay),
+                                    grade.FormatError(backup.FormatError),
+                                    grade.BonusForQuality(backup.BonusForQuality),
+                                    grade.BonusToNative(backup.BonusToNative),
+                                    grade.Comment(backup.Comment);
+                                    backup[grade.ID()] = {};
+                                }
+                                grade.isEditing(false);
+                            };
+
+                            grade.commit = function (grade) {
+
+                                var data = { grade: ko.mapping.toJS(grade) };
+                                var service = new HTTPService();
+                                service.post(updateGradeURL, data, success, true);
+                                function success() {
+                                    grade.isEditing(false);
+                                    grade.isDirty(false);
+
+                                }
+                            };
+
+                        });
+                        */
+                        var item = ko.mapping.fromJS(data);
+
+                        item.gradeCount = ko.computed(function () { return item.grades().length; }, item);
+                        item.detailsVisible = ko.observable(false);
+                        item.toggleVisible = function () {
+                            this.detailsVisible(!this.detailsVisible());
+                        };
+                        item.average = ko.computed(function () {
+                            var l = this.grades().length;
+                            if (l == 0)
+                                return 0;
+                            var sum = 0;
+                            this.grades().forEach(function (i) {
+                                sum = sum + i.Grade();
+                            });
+                            console.log("l = " + l + " sum = " + sum);
+                            return Math.round(sum / this.grades().length * 100) / 100;
+                        }, item);
+
+                        item.trend = ko.computed(function () {
+                            var avg = this.average();
+                            var totavg = this.totalAverage();
+                            console.log(avg + " " + totavg);
+                            var result;
+                            result = "trendsame";
+                            if (avg < totavg) result = "trendminus";
+                            if (avg > totavg) result = "trendplus";
+
+                            console.log(result);
+                            return result;
+                        }, item);
+
+
+
+                        return item;
+                    }
+                },
+                'grades': {
+                    create: function (options) {
+                        var item = ko.mapping.fromJS(options.data);
+                        return item;
+                    }
+                }
+            };
+
+        self.vm = ko.mapping.fromJS({
+            currentPage: [],
+        }, mapping);
+
+        self.vm.selected = ko.observable({});
+
+        self.buffer = {};
+
+        self.vm.addOrUpdateTranslatorDomain1 = function (parent, grade) {
+            console.log('parent = ');
+            console.dir(ko.mapping.toJS(parent));
+
+            console.log('grade = ');
+            console.dir(ko.mapping.toJS(grade));
+
+            var data = { translatorID: grade.TranslatorID(), languageName: grade.Direction, domainName: grade.Domain1 };
+            addOrUpdateDomain(data, success1);
+            function success1() {
+                grade.IsDomain1Registered(true);
+                markRegistered(parent, grade.Domain1);
+            }
+        };
+
+        self.vm.addOrUpdateTranslatorDomain2 = function (parent, grade) {
+            console.log('parent = ');
+            console.dir(ko.mapping.toJS(parent));
+
+            console.log('grade = ');
+            console.dir(ko.mapping.toJS(grade));
+
+            var data = { translatorID: grade.TranslatorID(), languageName: grade.Direction, domainName: grade.Domain2 };
+            addOrUpdateDomain(data, success2);
+            function success2() {
+                grade.IsDomain2Registered(true);
+                markRegistered(parent, grade.Domain2);
+            }
+        };
+
+        function markRegistered(grades, domainName) {
+            
+            var grades = self.vm.selected().grades();
+            console.log('grades to update= ');
+            console.dir(grades);
+            grades.forEach(function (item) {
+                console.dir('checking ' + item.Domain1() + ',' + item.Domain2() + ',' + domainName() + ',');
+                if (item.Domain1() === domainName()) item.IsDomain1Registered(true);
+                if (item.Domain2() === domainName()) item.IsDomain2Registered(true);
+            });
+            toastr.success("Исполнителю добавлена тематика");
+        }
+
+        function addOrUpdateDomain(data, callback) {
+
+            var url = '@Url.Action("AddOrUpdateDomain")';
+            
+            $.ajax({ url: url, data: data, type: "GET", success: success }).fail(fail);
+
+            function fail(data, textStatus, jqXHR) { console.log('fail'); console.dir(textStatus); }
+
+            function success(data, textStatus, jqXHR) {
+                if (data.Success) {
+                     
+                    callback();
+                }
+                else
+                    toastr.error(data.ErrorMessage, "Ошибка");
+            }
+        }
+
+        self.vm.showGrades = function (data) {
+
+            self.buffer = data;
+
+
+            console.dir(ko.mapping.toJS(data));
+
+            var mapping = {
+                'grades': {
+                    create: function (options) {
+
+                        var grade = ko.mapping.fromJS(options.data);
+
+                        grade.isEditing = ko.observable(false);
+
+                        grade.isDirty = ko.observable(false);
+
+                        grade.beginEdit = function (grade) {
+
+                            grade.isEditing(true);
+                            grade.isDirty(false);
+                            if (!self.backup)
+                                self.backup = {};
+                            self.backup[grade.ID()] = {
+                                Grade: grade.Grade(),
+                                Grammar: grade.Grammar(),
+                                Spelling: grade.Spelling(),
+                                Fact: grade.Fact(),
+                                Term: grade.Term(),
+                                Sense: grade.Sense(),
+                                Gaps: grade.Gaps(),
+                                Requirements: grade.Requirements(),
+                                Style: grade.Style(),
+                                Delay: grade.Delay(),
+                                FormatError: grade.FormatError(),
+                                BonusForQuality: grade.BonusForQuality(),
+                                BonusToNative: grade.BonusToNative(),
+                                Comment: grade.Comment()
+                            };
+                            $(document).off('focusin.modal');
+                            //$('.modal textarea').removeAtrr('disabled');
+                            $('.modal textarea').attr('tabindex', "1");
+
+                        };
+
+                        grade.gradeTemplate = function (item) { var result = item.isEditing() == true ? 'editmode' : 'normalmode'; console.log('result = ' + result); return result; };
+
+                        grade.recalculate = function (item) {
+                            console.log('recalc');
+                            console.log(item.isDirty());
+
+                            var down = parseInt(item.Grammar()) + parseInt(item.Spelling()) + parseInt(item.Fact())
+                                + parseInt(item.Term()) + parseInt(item.Style()) + parseInt(item.Sense()) + parseInt(item.Gaps())
+                                + parseInt(item.Requirements());
+                            var up = parseInt(item.BonusForQuality()) + parseInt(item.BonusToNative());
+                            var score = 8 - down + up;
+                            item.Grade(score);
+                            item.isDirty(true);
+                        };
+
+                        grade.discard = function (grade) {
+                            if (self.backup && self.backup[grade.ID()]) {
+                                grade.isDirty(false);
+                                var backup = self.backup[grade.ID()];
+                                console.log('backup for id = ' + grade.ID());
+                                console.dir(backup);
+                                grade.Grade(backup.Grade);
+                                grade.Grammar(backup.Grammar);
+                                grade.Spelling(backup.Spelling),
+                                grade.Fact(backup.Fact);
+                                grade.Term(backup.Term);
+                                grade.Sense(backup.Sense);
+                                grade.Gaps(backup.Gaps);
+                                grade.Requirements(backup.Requirements),
+                                grade.Style(backup.Style),
+                                grade.Delay(backup.Delay),
+                                grade.FormatError(backup.FormatError),
+                                grade.BonusForQuality(backup.BonusForQuality),
+                                grade.BonusToNative(backup.BonusToNative),
+                                grade.Comment(backup.Comment);
+                                backup[grade.ID()] = {};
+                            }
+                            grade.isEditing(false);
+                        };
+
+                        grade.commit = function (grade) {
+
+                            var data = { grade: ko.mapping.toJS(grade) };
+                            var service = new HTTPService();
+                            service.post(updateGradeURL, data, success, true);
+                            function success() {
+                                grade.isEditing(false);
+                                grade.isDirty(false);
+                                self.vm.currentPage.replace(self.buffer, self.vm.selected);
+
+                            }
+                        };
+                        console.log('grade structure');
+                        console.dir(grade);
+                        return grade;
+
+                    }
+                }
+            };
+            console.log('selected item');
+            console.dir(ko.mapping.fromJS(data, mapping));
+            self.vm.selected(ko.mapping.fromJS(data, mapping));
+            console.log('now selected item');
+            console.dir(self.vm.selected);
+
+            $('grades-popup').modal('show');
+
+        }
+
+        this.init = function init() {
+            console.log('applying bindings');
+            ko.applyBindings(self.vm);
+        }
+
+        this.doSearch = function doSearch() {
+
+            // initializing search params for search
+            var searchParameters = {
+                editor: $('#DrDnEditors').val(),
+                showOrphans: $('#chkShowOrphans').is(':checked'),
+                translator: parseInt($('#DrDnTranslators').val()),
+                startDate: $('#TxtStartDate').datebox('getValue'),
+                endDate: $('#TxtEndDate').datebox('getValue'),
+                languageName: $('#languageName').val(),
+                filter: $('#txtFilter').val(),
+                staff: $('#selectStaff').val(),
+                unApproved: $('#chkUnapproved').is(':checked'),
+                newEmployee: $('#chkNew').is(':checked'),
+                active: $('#chkActive').is(':checked'),
+                blackList: $('#chkBlackList').is(':checked'),
+                reserve: $('#chkReserve').is(':checked'),
+                sort: $('#selectSort').val()
+            };
+            console.log('these are my searchparams=');
+            console.dir(searchParameters);
+            console.dir(JSON.stringify(searchParameters));
+
+            var s = new PaginatedSearch(self.url, searchParameters);
+            console.log("initial model = ");
+            console.dir(self.vm);
+            s.start(self.vm, 'paginator', mapping);
+        };
+    }
+
+    //var gradeLookUp = new GradeLookUp();
+
+    //    function search() {
+    //        $('#grade-search-results').fadeOut();
+    //        var service = new HTTPService();
+    //        var data = {
+    //            DrDnEditors: $('#DrDnEditors').val(),
+    //            DrDnTranslators: $('#DrDnTranslators').val(),
+    //            TxtStartDate: $('#TxtStartDate').datebox('getValue'), 
+    //            TxtEndDate: $('#TxtEndDate').datebox('getValue'),
+    //            languageName: $('#languageName').val()
+
+    //        };
+    //        console.log('requesting data=');
+
+    //        console.dir(data);
+
+    //        service.getData(getGradesURL, data, gradeLookUp.displayGrades.bind(gradeLookUp));
+    //    }
+    /*    
+            function GradeLookUp() {
+                var vm = {}, self = this;
+                this.unMapped = true;
+    
+                //this.edit = function (grade) {
+    
+                //    unwrapped = ko.mapping.toJS(grade);
+    
+                //    gradeEditor.editGrade(unwrapped.ID, saveResult);
+    
+    
+                //    function saveResult(item) {
+                //        alert(grade.ID());
+                //        grade.Grade(item.newgrade());
+                //        grade.Spelling(item.Spelling());
+                //        grade.Fact(item.Fact());
+                //        grade.Term(item.Term());
+                //        grade.Grammar(item.Grammar());
+                //        grade.Sense(item.Sense());
+                //        grade.Gaps(item.Gaps());
+                //        grade.Requirements(item.Requirements());
+                //        grade.Style(item.Style());
+                //        grade.Delay(item.Delay());
+                //        grade.FormatError(item.FormatError());
+                //        grade.BonusForQuality(item.BonusForQuality());
+                //        grade.BonusToNative(item.BonusToNative());
+                //        grade.Comment(item.Comment());
+                //        var data = { grade: ko.mapping.toJS(grade) };
+                //        var service = new HTTPService();
+                //        service.post(updateGradeURL, data, success);
+                //        function success() {
+                //            alert('oops!');
+                //        }
+                //    }
+    
+                //};
+                
+                this.displayGrades = function displayGrades(data) {
+                    console.log('data = ');
+                    console.dir(data);
+                    
+                    var mapping = {
+                        'translators': {
+                            create: function (options) {
+    
+                                var data = options.data;
+    
+                                 
+    
+                                data.grades.forEach(function (grade) {
+    
+                                    grade.isEditing = ko.observable(false);
+    
+                                    grade.isDirty = ko.observable(false);
+    
+                                    grade.beginEdit = function (grade) { 
+                                        grade.isEditing(true);
+                                        grade.isDirty(false);
+                                            if (!self.bakup)
+                                                self.backup = {};
+                                            self.backup[grade.ID()] = {
+                                                Grade: grade.Grade(),
+                                                Grammar: grade.Grammar(),
+                                                Spelling: grade.Spelling(),
+                                                Fact: grade.Fact(),
+                                                Term: grade.Term(),
+                                                Sense: grade.Sense(),
+                                                Gaps: grade.Gaps(),
+                                                Requirements: grade.Requirements(),
+                                                Style: grade.Style(),
+                                                Delay: grade.Delay(),
+                                                FormatError: grade.FormatError(),
+                                                BonusForQuality: grade.BonusForQuality(),
+                                                BonusToNative: grade.BonusToNative(),
+                                                Comment: grade.Comment()
+                                            };
+                                        };
+    
+                                    grade.gradeTemplate = function (item) { var result = item.isEditing() == true ? 'editmode' : 'normalmode'; console.log('result = ' + result); return result; };
+    
+                                    grade.recalculate = function (item) {
+                                        console.log('recalc');
+                                        console.log(item.isDirty());
+    
+                                        var down = parseInt(item.Grammar()) + parseInt(item.Spelling()) + parseInt(item.Fact())
+                                            + parseInt(item.Term()) + parseInt(item.Style()) + parseInt(item.Sense()) + parseInt(item.Gaps())
+                                            + parseInt(item.Requirements());
+                                        var up = parseInt(item.BonusForQuality()) + parseInt(item.BonusToNative());
+                                        var score = 8 - down + up;
+                                        item.Grade(score);
+                                        item.isDirty(true);
+                                    };
+    
+                                    grade.discard = function (grade) {
+                                        if(self.backup && self.backup[grade.ID()]) {
+                                            grade.isDirty(false);
+                                            var backup = self.backup[grade.ID()];
+                                            console.log('backup for id = ' + grade.ID());
+                                            console.dir(backup);
+                                            grade.Grade(backup.Grade);
+                                            grade.Grammar(backup.Grammar);
+                                            grade.Spelling(backup.Spelling),
+                                            grade.Fact(backup.Fact);
+                                            grade.Term(backup.Term);
+                                            grade.Sense(backup.Sense);
+                                            grade.Gaps(backup.Gaps);
+                                            grade.Requirements(backup.Requirements),
+                                            grade.Style(backup.Style),
+                                            grade.Delay(backup.Delay),
+                                            grade.FormatError(backup.FormatError),
+                                            grade.BonusForQuality(backup.BonusForQuality),
+                                            grade.BonusToNative(backup.BonusToNative),
+                                            grade.Comment(backup.Comment);
+                                            backup[grade.ID()] = {};
+                                        }
+                                        grade.isEditing(false);
+                                    };
+    
+                                    grade.commit = function (grade) {
+    
+                                        var data = { grade: ko.mapping.toJS(grade) };
+                                        var service = new HTTPService();
+                                        service.post(updateGradeURL, data, success, true);
+                                        function success() {
+                                            grade.isEditing(false);
+                                            grade.isDirty(false);
+    
+                                        }
+                                    };
+    
+                                });
+    
+                                var item = ko.mapping.fromJS(data);
+    
+                                item.gradeCount = ko.computed(function () { return item.grades().length; }, item);
+                                item.detailsVisible = ko.observable(false);
+                                item.toggleVisible = function () {
+                                    this.detailsVisible(!this.detailsVisible());
+                                };
+                                item.average = ko.computed(function () {
+                                    var l = this.grades().length;
+                                    if (l == 0)
+                                        return 0;
+                                    var sum = 0;
+                                    this.grades().forEach(function (i) {
+                                        sum = sum + i.Grade();
+                                    });
+                                    console.log("l = " + l + " sum = " + sum);
+                                    return Math.round(sum / this.grades().length * 100) / 100;
+                                }, item);
+    
+                                item.trend = ko.computed(function () {
+                                    var avg = this.average();
+                                    var totavg = this.totalAverage();
+                                    console.log(avg + " " + totavg);
+                                    var result;
+                                    result = "trendsame";
+                                    if (avg < totavg) result = "trendminus";
+                                    if (avg > totavg) result = "trendplus";
+    
+                                    console.log(result);
+                                    return result;
+                                }, item);
+    
+                                
+    
+                                return item;
+                            }
+                        },
+                        'grades': {
+                            create: function (options) {
+                                var item = ko.mapping.fromJS(options.data);
+                                return item;
+                            }
+                        }
+                    };
+                    console.log('unmapped = ' + this.unMapped.toString());
+                    if (this.unMapped) {
+                        this.unMapped = false;
+    
+                        //data.translators.forEach(function (item) {
+                        //    item.grades.forEach(function (grade) {
+                        //        grade.isEditing = ko.observable(false);
+    
+                       //         grade.beginEdit = function (grade) { console.log('start editing'); grade.isEditing(true); };
+    
+                        //        grade.gradeTemplate = function (item) { var result = item.isEditing() == true ? 'editmode' : 'normalmode'; console.log('result = ' + result); return result; };
+                        //    });
+                        //});
+    
+                        vm = ko.mapping.fromJS(data, mapping);
+    
+                        console.log('model is = ');
+                        console.dir(vm);
+                        console.dir(vm.translators()[0].grades());
+    
+                        ko.applyBindings(vm, document.getElementById('grade-search-results'));
+    
+                    }
+                    else {
+    
+                        ko.mapping.fromJS(data, mapping, vm);
+    
+                    }
+    
+                    $('#grade-search-results').slideDown();
+    
+    
+                }
+            }
+    */
+    function GradeEditor() {
+        this.unMapped = true, self = this;
+        var vm = {};
+
+
+
+        this.editGrade = function editGrade(gradeID, callBack) {
+            var service = new HTTPService();
+            var data = { gradeID: parseInt(gradeID) };
+            service.getData(getGradeURL, data, _editGrade);
+
+            function _editGrade(model) {
+
+                if (!model)
+                    return;
+                console.log("here is the model");
+                console.dir(model);
+                model.newgrade = 0;
+
+                //ko.cleanNode($('#grade-edit'));
+
+
+
+                var mapping = {
+
+                    create: function (options) {
+                        var vm = ko.mapping.fromJS(options.data);
+                        vm.recalculate = function () {
+                            var down = parseInt(this.Grammar()) + parseInt(this.Spelling()) + parseInt(this.Fact()) +
+                                parseInt(this.Term()) + parseInt(this.Sense()) + parseInt(this.Gaps()) + parseInt(this.Requirements()) + parseInt(this.Style());
+                            var up = parseInt(this.BonusForQuality()) + parseInt(this.BonusToNative());
+                            var result = 8 - down + up;
+                            vm.newgrade(result);
+                        };
+
+                        vm.commit = function () {
+                            callBack(vm);
+                        };
+
+                        return vm;
+                    }
+                };
+
+
+
+
+
+
+
+                if (self.unMapped) {
+                    console.log('first time vm');
+                    vm = ko.mapping.fromJS(model, mapping);
+                    self.unMapped = false;
+                    ko.applyBindings(vm, document.getElementById('grade-edit'));
+
+                    // ko.applyBindings(vm, document.getElementById('grade-edit'));
+                }
+
+                else {
+                    console.log('NO first time vm');
+
+                    ko.mapping.fromJS(model, mapping, vm);
+
+                    //vm.recalculate = function () {
+                    //    var down = parseInt(this.Grammar()) + parseInt(this.Spelling()) + parseInt(this.Fact()) +
+                    //        parseInt(this.Term()) + parseInt(this.Sense()) + parseInt(this.Gaps()) + parseInt(this.Requirements()) + parseInt(this.Style());
+                    //    var up = parseInt(this.BonusForQuality()) + parseInt(this.BonusToNative());
+                    //    var result = 8 - down + up;
+                    //    vm.newgrade(result);
+                    //};
+
+                    //vm.commit = function () {
+                    //    callBack(vm);
+                    //};
+                }
+
+                $('#grade-edit').dialog({ closed: false });
+
+            }
+
+        }
+
+    }
+    function doPageSettings() {
+
+
+        //$('.modal').on('shown.bs.modal', function() { $(document)
+
+
+        $('#grade-edit').dialog({
+            title: "Редактирование оценки",
+            closed: true,
+            width: 700,
+            height: 700,
+
+
+            collapsed: false,
+            modal: true
+        });
+
+        var gradeLookup = new GradeLookup(getGradesURL);
+        gradeLookup.init();
+        $('#search-button').on('click', gradeLookup.doSearch);
+
+
+
+    }
+
+</script>

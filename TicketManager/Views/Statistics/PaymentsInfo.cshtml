@@ -1,0 +1,34 @@
+﻿@model  IEnumerable<TicketDataModel.Payment>
+
+@if (Model.Count() == 0)
+{
+    <p>Ничего нет ...</p>
+}
+else
+{
+<table>
+    <tr>
+        <th>Сумма</th>
+        <th>Дата</th>
+        <th>Дата изменения</th>
+        <th>Комментарий</th>
+    </tr>
+    @foreach (var payment in Model)
+    {
+        <tr>
+            <td>
+                @((payment.Amount ?? 0).ToString("C"))
+            </td>
+            <td>
+                @payment.PaidDate
+            </td>
+            <td>
+                @payment.ChangedDate
+            </td>
+            <td>
+                @payment.Comment
+            </td>
+        </tr>
+    }
+</table>
+}

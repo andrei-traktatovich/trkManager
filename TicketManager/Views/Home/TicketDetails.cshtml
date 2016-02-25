@@ -1,0 +1,162 @@
+﻿@model TicketDataModel.Ticket
+
+
+<p>
+    Заявка № <strong>@Model.ID</strong> от @Model.CreatedDate&nbsp;|&nbsp;
+    <img src="~/Images/edit.png" class="linkimage" />
+    @Html.ActionLink("Изменить", "Edit", new { id = Model.ID })
+    &nbsp;|&nbsp;
+    <img src="~/Images/delete.png" class="linkimage" />
+    @Ajax.ActionLink("Удалить", "Delete", new { id = Model.ID },
+                    new AjaxOptions()
+                    {
+                        OnComplete = "updateTicketSearchResults",
+                        HttpMethod = "Post",
+                        LoadingElementId = "progress",
+                        Confirm = "Удалить эту заявку?"
+                    })
+</p>
+<p>
+    Статус заявки: @Html.DisplayFor(modelItem => Model.TicketStatus.Name)
+    @if ((int)TicketManager.CurrentUser.GetCurrentUser().OfficeID == Model.Author.OfficeID
+        && Model.StatusID == 3)
+    {
+        <span id="confirm-completion">&nbsp;|&nbsp;
+    @Ajax.ActionLink("Подтвердить исполнение", "ConfirmTicketCompleted", new { ID = Model.ID },
+                    new AjaxOptions() { LoadingElementId = "progress", OnFailure = "ajaxErrorMessage", OnSuccess = "updateTicketSearchResults" })
+        </span>
+    }
+</p>
+<div>
+    
+    @if (Model.TakenUpDate.HasValue)
+    {
+        <span>принята в работу @Model.TakenUpDate.Value</span>
+    }
+    @if (Model.ClosedDate.HasValue)
+    {
+        <span>&nbsp;|&nbsp;закрыта/отклонена @Model.ClosedDate.Value</span>
+    }
+</div>
+<div class="comment-body">
+    <h1 id="how-add-comment">Текст</h1>
+    @Html.DisplayFor(modelItem => Model.Text)
+</div>
+@Html.Partial("_TicketComments", Model.TicketComments)
+@if (Model.TicketAttachments.Count > 0)
+{
+    <p id="how-add-attachments"><strong>Приложения:</strong></p>
+    <ul>
+        @foreach (var a in Model.TicketAttachments)
+        {
+            <li>@Html.ActionLink(System.IO.Path.GetFileName(a.FilePath), "DownLoad", new { FilePath = a.FilePath })</li>
+        }
+    </ul>
+}
+<p><strong>Автор</strong></p>
+<ul>
+    @if (@Model.Author.TranslatorID == TicketManager.CurrentUser.GetCurrentUserID())
+    {
+        <li id="you-are-author">Вы являетесь автором этой заявки.</li>
+    }
+    else
+    {
+        @Html.Partial("_TicketParticipantInfo", Model.Author)
+    }
+</ul>
+@if (Model.StatusID < 4 && (Model.AssigneeID == TicketManager.CurrentUser.GetCurrentUserID()
+        || Model.AssigneeOfficeID == TicketManager.CurrentUser.GetCurrentUser().OfficeID))
+{
+    <div class="QuickActionsDiv">
+        <h2>Дальнейшие действия</h2>
+        <ul>
+            <li>
+                @switch (Model.StatusID)
+                {
+                    case 0: 
+                        <ul>
+                            <li>
+                        
+                        
+                        @Ajax.ActionLink("Взять в работу", "TakeUpTicket", new { ID = Model.ID },
+                    new AjaxOptions() { LoadingElementId = "progress", HttpMethod = "Post", OnFailure = "ajaxErrorMessage", OnSuccess = "updateTicketSearchResults" })
+                    <span> или </span>
+                            </li>
+                            <li>
+                        @using (Ajax.BeginForm("RejectTicket", new AjaxOptions() { LoadingElementId = "progress", HttpMethod = "Post", OnFailure = "ajaxErrorMessage", OnSuccess = "updateTicketSearchResults" }))
+                        {
+                    <div class="search-criteria-block">
+                        <span id="you-can-leave-comment">Оставить комментарий: </span>
+                        @Html.TextBox("txtRejectComment", null, new { style = "width: 150px;" })
+                        <span> (@Html.CheckBox("chkNotify") уведомить автора) и </span>
+                        @Html.HiddenFor(modelItem => Model.ID)
+                        <input type="submit" value="Отклонить" />
+                    </div>
+                        }
+                        </li>
+                        </ul> 
+                        break;
+                        
+                    case 1: 
+                        using (Ajax.BeginForm("CloseTicket", new AjaxOptions() { LoadingElementId = "progress", HttpMethod = "Post", OnFailure = "ajaxErrorMessage", OnSuccess = "updateTicketSearchResults" }))
+                        {
+                    <div class="search-criteria-block">
+                        <span>Оставить комментарий: </span>
+                        @Html.TextBox("txtCloseComment", null, new { style = "width: 150px;" })
+                        <span>@Html.CheckBox("chkNotify") уведомить автора) и </span>
+                        @Html.HiddenFor(modelItem => Model.ID)
+                        <input type="submit" value="Закрыть" />
+                    </div>
+                        }; break;
+                    case 2: @Ajax.ActionLink("Взять в работу", "TakeUpTicket", new { ID = Model.ID },
+                    new AjaxOptions() { LoadingElementId = "progress", HttpMethod = "Post", OnFailure = "ajaxErrorMessage", OnSuccess = "updateTicketSearchResults" }); break;
+                    case 3: @Ajax.ActionLink("Взять в работу", "TakeUpTicket", new { ID = Model.ID },
+                    new AjaxOptions() { LoadingElementId = "progress", HttpMethod = "Post", OnFailure = "ajaxErrorMessage", OnSuccess = "updateTicketSearchResults" }); break;
+                }
+            </li>
+
+            @if (Model.Assignee == null)
+            {
+                <li>Назначить ответственного
+                <ul>
+                    @foreach (var p in (IEnumerable<TicketDataModel.Translator>)ViewData["translators"])
+                    {
+                        <li>@Html.ActionLink(p.Name, "Appoint", new { TranslatorID = p.TranslatorID, TicketID = Model.ID })</li>
+                    }
+                </ul>
+                </li>       
+            }
+        </ul>
+    </div>
+}
+else
+{
+    if (Model.Assignee != null)
+    {
+    <p><strong>Ответственное лицо</strong></p>
+    @Html.Partial("_TicketParticipantInfo", Model.Assignee)
+    }
+    else
+    {
+        if (Model.AssigneeOffice.TranslatorReference.FirstOrDefault() != null)
+        {
+    <p><strong>Подразделение, куда направлена заявка</strong></p>
+    <ul>
+        <li>@Model.AssigneeOffice.Name</li>
+        <li>Тел. (офис) 
+            @foreach (var p in Model.AssigneeOffice.TranslatorReference.First().PersonalInfos)
+            {
+                <span class="personalinfo">@p.Phone</span>
+            }
+        </li>
+        <li>Email (офис)
+                @foreach (var p in Model.AssigneeOffice.TranslatorReference.First().PersonalInfos)
+                {
+                    <span class="perfonalinfo"><a href="mailto:@p.Email">@p.Email</a></span>
+                }
+        </li>
+    </ul>
+        }
+    }
+}
+

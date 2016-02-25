@@ -1,0 +1,67 @@
+﻿@model BusinessLogic.CashIncomeAndExpenseManager.BalanceReportViewModel
+
+@{
+    ViewBag.Title = "BalanceReport";
+}
+
+
+<div class="container">
+    <div class="row">
+
+        <h2>Остаток на конец дня</h2>
+        <table class="table table-condensed table-striped table-bordered text-center">
+            <thead>
+                <tr>
+                    <th></th>
+                    @foreach (var date in Model.Dates)
+                    {
+                        <th colspan='5' class="text-center">@(date.ToString("dd.MM.yy"))</th>
+                    }
+                </tr>
+                <tr class="text-center">
+                    <th></th>
+                    @foreach (var date in Model.Dates)
+                    {
+                        
+                        <th>Приход</th>
+                        <th>Расход</th>
+                        <th>Инкассация(-)</th>
+                        <th>Внутр.инкассация(+)</th>
+                        <th>Остаток</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var officeLine in Model.OfficeLines)
+                {
+                    <tr>
+                        <td><strong>@officeLine.Name</strong></td>
+                        @for (var i = 0; i < officeLine.Balances.Count; i++)
+                        {
+                            
+                            <td>@officeLine.Incomes[i].ToString("c")</td>
+                            <td>@officeLine.Expenses[i].ToString("c")</td>
+                            <td>@officeLine.CashCollections[i].ToString("c")</td>
+                            <td>@officeLine.InternalCashCollections[i].ToString("c")</td>
+                            <td>@officeLine.Balances[i].ToString("c")</td>
+                        }
+                    </tr>
+                    
+                }
+                <tr class="bg-info">
+                    <td><strong>Итого</strong></td>
+                    @for (var i = 0; i < Model.TotalBalances.Count; i++)
+                    {
+                        
+                        <td><strong>@Model.TotalIncomes[i].ToString("c")</strong></td>
+                        <td><strong>@Model.TotalExpenses[i].ToString("c")</strong></td>
+                        <td><strong>@Model.TotalCashCollections[i].ToString("c")</strong></td>
+                        <td><strong>@Model.TotalInternalCash[i].ToString("c")</strong></td>
+                        <td><strong>@Model.TotalBalances[i].ToString("c")</strong></td>
+                    }
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+</div>

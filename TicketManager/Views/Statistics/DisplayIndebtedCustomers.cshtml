@@ -1,0 +1,106 @@
+﻿@model IEnumerable<IGrouping<TicketDataModel.Customer, TicketDataModel.Indebtedness.IndebtedCustomer>>
+
+<table style="width:100%;">
+    <tr>
+        <th>Заказчик</th>
+        <th>Сумма к оплате</th>
+        <th>Оплачено</th>
+        <th>Задолженность</th>
+    </tr>
+    @{double totalAmountDue = 0, totalAmountPaid = 0, totalDebt = 0;}
+
+    @foreach (var customer in Model)
+    {
+        <tr>
+            <td><a href="#" onclick="toggleVisible(this, '@customer.Key.ID'); return false">@customer.Key.Name</a></td>
+            @{var amountDue = customer.Sum(x => x.Invoice.AmountDue ?? 0);
+              var amountPaid = customer.Sum(x => x.Invoice.PaymentAmount ?? 0);
+              var debt = amountDue - amountPaid;
+              totalAmountDue += amountDue;
+              totalAmountPaid += amountPaid;
+              totalDebt += debt;
+            }
+            <td>@amountDue.ToString("C")</td>
+            <td>@amountPaid.ToString("C")</td>
+            <td>@debt.ToString("C")</td>
+        </tr>
+        <tr id="@customer.Key.ID" style="display: none;">
+            <td colspan="3">
+                <table style="font: italic; width: 100%; background-color: #f3f0f0">
+                    <tr>
+                        <th>Счет №</th>
+                        <th>Дата выставления</th>
+                        <th>Сумма</th>
+                        <th>Сумма оплачено</th>
+                        <th>Задолженность</th>
+                        <th></th>
+                    </tr>
+                    @foreach (var c in customer)
+                    {
+                        <tr>
+                            <td class="hoverable">
+                                @c.Invoice.PaymentNameText
+                                <div style="position: absolute;">
+                                    @if (c.Invoice.Payments.Count() > 0)
+                                    {
+                                        @Html.Partial("PaymentsInfo", c.Invoice.Payments.AsEnumerable())
+                                    }
+                                </div>
+                            </td>
+                            <td>@(c.Invoice.CreatedDate.HasValue ? c.Invoice.CreatedDate.Value.ToString("dd.MM.yy") : "")</td>
+                            <td>@(c.Invoice.AmountDue.HasValue ? c.Invoice.AmountDue.Value.ToString("C") : "")</td>
+                            <td>@(c.Invoice.PaymentAmount.HasValue ? c.Invoice.PaymentAmount.Value.ToString("C") : "")</td>
+                            <td><a href="#" onclick="toggleVisible(this, 'inv-@c.Invoice.ID')">Заказы</a></td>
+                        </tr>
+                        <tr id ="inv-@c.Invoice.ID" style="display: none; background: white;">
+                            <td colspan="2">
+                                @if (!c.Equals(null) && c.Jobs != null)
+                                {
+                                    @Html.Partial("JobInfo", c.Jobs.ToList())
+                                }
+                            </td>
+                        </tr>
+
+                            
+                    }
+
+                </table>
+            </td>
+
+        </tr>
+        
+    }
+
+    <tr>
+        <td>Всего</td>
+        <td>@totalAmountDue.ToString("C")</td>
+        <td>@totalAmountPaid.ToString("C")</td>
+        <td>@totalDebt.ToString("C")</td>
+
+    </tr>
+
+</table>
+
+
+<script>
+    function toggleVisible(callingEl, id) {
+        var e = $('#' + id);
+
+        if (e.is(':hidden'))
+            e.fadeIn();
+        else
+            e.fadeOut();
+        $(callingEl).closest('tr').toggleClass('big');
+    }
+
+    function setToolTips() {
+        setToolTips
+    }
+
+    function showParticipants() {
+
+
+        $('#participants-area').window({ closed: false });
+        $('#participants-area').window('center');
+    }
+</script>

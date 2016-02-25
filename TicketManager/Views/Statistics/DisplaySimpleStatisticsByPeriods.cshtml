@@ -1,0 +1,30 @@
+﻿@model List<TicketManager.SimpleStatisticsData> 
+
+<table>
+    <tr>
+        <th>Месяц</th>
+        <th>Кол-во</th>
+        <th>Стр.</th>
+        <th>Сумма</th>
+        <th>Сумма со скидкой</th>
+    </tr>
+    @{ DateTime date = new DateTime(2013, 1, 1);}
+    @foreach(var l in Model)
+    {
+        
+    <tr>
+        <td>@date.Month</td>
+        <td>@Ajax.ActionLink(l.JobsCount.ToString(), "DisplaySimpleStatistics", "Statistics",   
+        new { officeID = -1, startDate = date, endDate = date.AddMonths(1), startDateOption = 0, endDateOption = 0 }, 
+        new AjaxOptions { InsertionMode = InsertionMode.Replace, UpdateTargetId = "details-view-container" }) 
+
+        </td>
+        <td>@l.FinalPageCount</td>
+        <td>@l.FinalAmount.ToString("C")</td>
+        <td>@l.FinalAmountWithDiscount.ToString("C")</td>
+
+        
+    </tr>
+        date = date.AddMonths(1);
+    }
+</table>

@@ -1,0 +1,169 @@
+﻿@{
+    ViewBag.Title = "Простая статистика продаж по филиалам";
+}
+
+<h2>Статистика</h2>
+
+<div id="layout-div" style="width: 100%; height: 100%;">
+    <div id="options-forms" class="easyui-accordion" style="width: 250px; float: left;">
+
+
+        <div id="by-products" class="options-pane" title="По продуктам">
+            
+            @using (Ajax.BeginForm(new AjaxOptions
+    {
+        InsertionMode = InsertionMode.Replace,
+        UpdateTargetId = "details-view-container",
+        Url = Url.Content(Url.Action("DisplaySimpleStatistics")),
+        OnComplete = "drawChart",
+        LoadingElementId = "progress"
+    }))
+            {
+                <span>Офис: </span>@Html.DropDownList("officeID", (List<SelectListItem>)ViewData["officesList"])
+    
+                <hr />
+                <span>С </span>
+                @Html.TextBox("startDate", DateTime.Now.Date.AddDays(-DateTime.Now.Date.Day + 1).ToString("dd.MM.yyyy"), new { @class = "easyui-datebox date-picker", data_options = "formatter:russianFormatter,parser:datetimeParser" })
+                <span>&nbsp;</span>
+                @Html.DropDownList("startDateOption", (List<SelectListItem>)ViewData["dateOptions"])<br />
+                <span>По </span>
+
+                @Html.TextBox("endDate", DateTime.Now.Date.ToString("dd.MM.yyyy"), new { @class = "easyui-datebox date-picker", data_options = "formatter:russianFormatter,parser:datetimeParser" })
+                <span>&nbsp;</span>
+                @Html.DropDownList("endDateOption", (List<SelectListItem>)ViewData["dateOptions"])<br />
+                @Html.CheckBox("includeSubJobs", false) <span> взаимозачеты</span>
+                <hr />
+    
+                <button type="submit">Получить</button>
+            }
+        </div>
+
+
+        <div id="by-offices" class="options-pane" title="По офисам">
+            
+            @using (Ajax.BeginForm(new AjaxOptions
+            {
+                InsertionMode = InsertionMode.Replace,
+                UpdateTargetId = "details-view-container",
+                Url = Url.Content(Url.Action("DisplayStatisticsByOffice")),
+                OnComplete = "drawChart",
+                LoadingElementId = "progress"
+            }))
+            {
+                <span>С </span>
+                @Html.TextBox("startDate", DateTime.Now.Date.AddDays(-DateTime.Now.Date.Day + 1).ToString("dd.MM.yyyy"), new { @class = "easyui-datebox date-picker", data_options = "formatter:russianFormatter,parser:datetimeParser" })
+                <span>&nbsp;</span>
+                @Html.DropDownList("startDateOption", (List<SelectListItem>)ViewData["dateOptions"])<br />
+                <span>По </span>
+
+                @Html.TextBox("endDate", DateTime.Now.Date.ToString("dd.MM.yyyy"), new { @class = "easyui-datebox date-picker", data_options = "formatter:russianFormatter,parser:datetimeParser" })
+                <span>&nbsp;</span>
+                @Html.DropDownList("endDateOption", (List<SelectListItem>)ViewData["dateOptions"])<br />
+                @Html.CheckBox("includeSubJobs", false) <span> взаимозачеты</span>
+                <hr />
+    
+                <button type="submit">Получить</button>
+            }
+        </div>
+
+        <div id="by-periods" class="options-pane" title="По периодам">
+             
+            @using (Ajax.BeginForm(new AjaxOptions
+            {
+                InsertionMode = InsertionMode.Replace,
+                UpdateTargetId = "details-view-container",
+                Url = Url.Content(Url.Action("DisplaySimpleStatisticsByPeriods")),
+                OnComplete = "drawChart",
+                LoadingElementId = "progress"
+            }))
+            {
+                <button type="submit">Получить</button>
+            }
+        </div>
+        <div id="indebtedness" class="options-pane" title="Задолженность">
+            
+            @using (Ajax.BeginForm(new AjaxOptions
+            {
+                InsertionMode = InsertionMode.Replace,
+                UpdateTargetId = "details-view-container",
+                Url = Url.Content(Url.Action("DisplayIndebtedCustomers")),
+
+                LoadingElementId = "progress"
+            }))
+            {
+                <span>Офис: </span>@Html.DropDownList("officeID", (List<SelectListItem>)ViewData["officesList"])
+    
+                <hr />
+                <span>С </span>
+                @Html.TextBox("startDate", DateTime.Now.Date.AddDays(-DateTime.Now.Date.Day + 1).ToString("dd.MM.yyyy"), new { @class = "easyui-datebox date-picker", data_options = "formatter:russianFormatter,parser:datetimeParser" })
+                <br />
+                <span>По </span>
+
+                @Html.TextBox("endDate", DateTime.Now.Date.ToString("dd.MM.yyyy"), new { @class = "easyui-datebox date-picker", data_options = "formatter:russianFormatter,parser:datetimeParser" })
+                <br />
+                @Html.CheckBox("onlyIndebted")<span>Только с задолженностью</span>
+                <br />
+                @Html.CheckBox("includeSubJobs", false)<span> взаимозачеты</span>
+                <br />
+                <button type="submit">Получить</button>
+            }
+        </div>
+
+        <div id="by-attractionchannels" class="options-pane" title="По источникам привлечения">
+            
+            @using (Ajax.BeginForm(new AjaxOptions
+            {
+                InsertionMode = InsertionMode.Replace,
+                UpdateTargetId = "details-view-container",
+                Url = Url.Content(Url.Action("AttractionChannels")),
+
+                LoadingElementId = "progress"
+            }))
+            {
+                <span>Офис: </span>@Html.DropDownList("officeID", (List<SelectListItem>)ViewData["officesList"])
+    
+                <hr />
+                <span>С </span>
+                @Html.TextBox("startDate", DateTime.Now.Date.AddDays(-DateTime.Now.Date.Day + 1).ToString("dd.MM.yyyy"), new { @class = "easyui-datebox date-picker", data_options = "formatter:russianFormatter,parser:datetimeParser" })
+                <span>&nbsp;</span>
+                @Html.DropDownList("startDateOption", (List<SelectListItem>)ViewData["dateOptions"])<br />
+                <span>По </span>
+
+                @Html.TextBox("endDate", DateTime.Now.Date.ToString("dd.MM.yyyy"), new { @class = "easyui-datebox date-picker", data_options = "formatter:russianFormatter,parser:datetimeParser" })
+                <span>&nbsp;</span>
+                @Html.DropDownList("endDateOption", (List<SelectListItem>)ViewData["dateOptions"])<br />
+                <hr />
+    
+                <button type="submit">Получить</button>
+            }
+        </div>
+
+
+
+    </div>
+    <div style="width: 85%; float: left;">
+        <div id="chart-wrapper"></div>
+        <div id="details-view-container" style="float: left; width: 80%;">
+        </div>
+    </div>
+</div>
+<div id="popup-area"></div>
+<script>
+    function drawChart() {
+
+    }
+
+    function doPageSettings() {
+
+        $('#popup-area').window({
+
+            width: 700,
+            height: 600,
+            modal: true,
+            closed: true
+        });
+    }
+
+
+
+</script>

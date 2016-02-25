@@ -1,0 +1,13 @@
+﻿@model TicketManager.FileNode
+
+<ul>
+    <li>@Model.Name
+            @if(Model.Children.Count() > 0)
+            {
+                foreach(var child in Model.Children)
+                {
+                @Html.Partial("FileNodeList", child)
+                }
+            }
+        </li>
+</ul>

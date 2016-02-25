@@ -1,0 +1,93 @@
+﻿@model List<IGrouping<string, TicketDataModel.Job>>
+
+<table class="nested-table shadowed">
+    <tr>
+        <th>Заказчик</th>
+        <th>№ заказа</th>
+        <th>Получено</th>
+        <th>Статус</th>
+        <th>Плановая сдача</th>
+        <th>Факт.сдача</th>
+        <th>Вход.страниц</th>
+        <th>Исх.страниц</th>
+        <th>Предв.сумма</th>
+        <th>Конечная сумма</th>
+        <th>Со скидкой</th>
+        <th>Рентабельность</th>
+        <th>Отв.</th>
+        <th>Спец.</th>
+        <th>Оплаты</th>
+    </tr>
+    @foreach (var customer in Model.OrderBy(x => x.Key))
+    {
+                            
+        <tr>
+            <td rowspan ="@(customer.Count() + 1)">
+                <b>@customer.Key</b>
+                <br />
+                <i>Всего: @customer.Count()<br />
+                    Вых.объем: @customer.Sum(x => (x.FinalPagesCountForCustomer.HasValue ? x.FinalPagesCountForCustomer : 0))<br />
+                    Кон.сум.со скид.: @customer.Sum(x => (x.DiscountedAmount.HasValue ? x.DiscountedAmount.Value : 0))
+                </i>
+            </td>
+        </tr>
+        foreach (var job in customer.OrderBy(x => x.Name))
+        {
+            var jobID = "job" + job.ID;
+        <tr>
+
+            <td class="hoverable">@Ajax.ActionLink(job.Name, "JobParticipants", "Job", new { id = job.ID }, new AjaxOptions
+                               {
+                                   InsertionMode = InsertionMode.Replace,
+                                   LoadingElementId = "progress",
+
+                                   UpdateTargetId = jobID
+                               })
+                <div id="@jobID" style="position: absolute; margin-top: 0px;"></div>
+
+
+            </td>
+            <td>@job.TakeUpDate</td>
+            <td>@job.JobStatus.Name</td>
+            @{
+            var overdue = "";
+            if (job.PlannedCompletionDate.HasValue && job.SentToCustomerDate.HasValue)
+            {
+                if (job.SentToCustomerDate.Value > job.PlannedCompletionDate.Value)
+                { overdue = "color : red"; }
+            }
+            if (job.PlannedCompletionDate.HasValue && job.JobStatusID < 2 && job.PlannedCompletionDate.Value < DateTime.Now)
+            { overdue = "color: red"; }
+            }
+            <td style ="@(overdue)">@if (job.PlannedCompletionDate.HasValue)
+                                  {
+                <span>@job.PlannedCompletionDate.Value</span>
+                                  }
+            </td>
+
+            <td style="@(overdue)">@job.SentToCustomerDate</td>
+            <td>@job.PagesCountWithSpaces</td>
+            <td>@job.FinalPagesCountForCustomer</td>
+            <td>@(job.AmountAtJobCreate.HasValue ? job.AmountAtJobCreate.Value.ToString("C2") : "")</td>
+            <td>@(job.AmountFinal.HasValue ? job.AmountFinal.Value.ToString("C2") : "")</td>
+            <td>@(job.DiscountedAmount.HasValue ? job.DiscountedAmount.Value.ToString("C2") : "")</td>
+            <td>@(job.GetMargin(job.DiscountedAmount))</td>
+            <td>@job.CreatedBy</td>
+            <td>@job.SpecificationNumberString</td>
+            <td>
+                @if (job.AccountingStatus != null && !string.IsNullOrEmpty(job.AccountingStatus.Name))
+                {
+                    @Ajax.ActionLink(linkText: job.AccountingStatus.Name, actionName: "DisplayIndebtedCustomers", routeValues: new { jobID = job.ID }, ajaxOptions: new AjaxOptions()
+                                   {
+                                       InsertionMode = InsertionMode.Replace,
+                                       UpdateTargetId = "popup-area",
+                                       OnComplete = "openPopUp"
+
+                                   })
+                }
+            </td>
+        </tr>
+        }
+
+    }
+</table>

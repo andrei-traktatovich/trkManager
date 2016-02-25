@@ -1,0 +1,59 @@
+﻿@model TicketDataModel.Translator
+
+<li><strong>Имя: @Model.Name</strong></li>
+    <li><strong>Офис: @Model.Office.Name </strong>
+                    
+    @if(Model.Office.TranslatorReference.FirstOrDefault() != null)
+    {
+        <ul>
+            <li>Тел. (офис) 
+            @foreach (var p in Model.Office.TranslatorReference.First().PersonalInfos)
+            {
+                <span class="personalinfo"><a href="dial:@TicketDataModel.PersonalInfo.CleanUpPhoneNumber(p.Phone)">@p.Phone</a></span>
+            }
+            </li>
+            <li>Email (офис)
+                @foreach (var p in Model.Office.TranslatorReference.First().PersonalInfos)
+                {
+                    <span class="perfonalinfo"><a href="mailto:@p.Email">@p.Email</a></span>
+                }
+            </li>
+        </ul>
+    }
+    </li>                
+    
+    <li><strong>Личные телефоны и электронная почта:</strong>
+        <ul>
+        <li>Мобильный: 
+            @foreach (var p in Model.PersonalInfos.Select(x => x.MobilePhone))
+            {
+                <span class="personalinfo">
+                    <a href="dial:@TicketDataModel.PersonalInfo.CleanUpPhoneNumber(p)">@p</a>
+                </span>
+            }
+        </li>
+        <li>Домашний:
+            @foreach (var p in Model.PersonalInfos.Select(x => x.HomePhone))
+            {
+                <span class="personalinfo">
+                    <a href="dial:@TicketDataModel.PersonalInfo.CleanUpPhoneNumber(p)">@p</a>
+                </span>
+            }
+        </li>
+        <li>Рабочий:
+            @foreach (var p in Model.PersonalInfos.Select(x => x.Phone))
+            {
+                <span class="personalinfo">
+                    <a href="dial:@TicketDataModel.PersonalInfo.CleanUpPhoneNumber(p)">@p</a>
+                </span>
+            }
+        </li>
+        <li>Email
+            @foreach (var p in Model.PersonalInfos.Select(x => x.Email))
+            {
+                <span class="personalinfo"><a href="mailto:@p">@p</a></span>
+            }
+        </li>
+        </ul>
+        </li>
+

@@ -1,0 +1,495 @@
+﻿@model IEnumerable<TicketDataModel.Job>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.r_nn)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.r_nic)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.r_num)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PlannedCompletionDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.TakeUpDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CompletedDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.SentToCustomerDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.JobStatus.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ParticipantsMaxStatus)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.AccountingStatus)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.JobType.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.LanguageDirection.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Customer)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CharCount)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PagesCount)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CharCountWithSpaces)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PagesCountWithSpaces)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FinalCharCount)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FinalPagesCount)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FinalCharCountWithSpaces)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FinalPagesCountWithSpaces)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FinalRate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Rate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.sm)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.sm_nal)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.sm_itog)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Comment)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.schet)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.sh_dt)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.sh_dt_opl)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.perev)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.opl)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.blank)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.blank_dt)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Doc)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Redak)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.podr)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.GL_RED)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.spo_opl)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Category)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.MainDomain.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.SecondaryDomain.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Notarized)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.OCRRequest)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.AnalysisRequest)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.TermsRequired)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PretransRequired)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.stat_perd)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.stat_an)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ContactName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ContactTel)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ContactMail)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Publication)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.an_1)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.an_2)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.an_3)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.an_4)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.an_5)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.an_6)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.an_7)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.AdditionalNumber)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Contract)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.MainParticipant)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.mz_Podr)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.mz_men)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CreatedBy)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Izm)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Isp_Edit)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Isp_Izm)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.val)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.dt_rasp_plan)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.dt_rasp_fakt)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.rasp_ispoln)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.str_rasp)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FilePath)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.rb_id)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.dt_red_st)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.r_nn)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.r_nic)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.r_num)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PlannedCompletionDate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TakeUpDate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CompletedDate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.SentToCustomerDate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Status)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ParticipantsMaxStatus)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.AccountingStatus)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.JobType.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.LanguageDirection.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Customer)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CharCount)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PagesCount)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CharCountWithSpaces)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PagesCountWithSpaces)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.FinalCharCount)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.FinalPagesCount)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.FinalCharCountWithSpaces)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.FinalPagesCountWithSpaces)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.FinalRate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Rate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.sm)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.sm_nal)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.sm_itog)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Comment)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.schet)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.sh_dt)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.sh_dt_opl)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.perev)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.opl)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.blank)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.blank_dt)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Doc)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Redak)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.podr)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.GL_RED)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.spo_opl)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Category)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.MainDomain.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.SecondaryDomain.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Notarized)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.OCRRequest)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.AnalysisRequest)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TermsRequired)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PretransRequired)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.stat_perd)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.stat_an)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ContactName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ContactTel)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ContactMail)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Publication)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.an_1)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.an_2)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.an_3)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.an_4)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.an_5)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.an_6)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.an_7)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.AdditionalNumber)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.dog)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.MainParticipant)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.mz_Podr)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.mz_men)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CreatedBy)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Izm)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Isp_Edit)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Isp_Izm)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.val)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.dt_rasp_plan)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.dt_rasp_fakt)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.rasp_ispoln)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.str_rasp)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.FilePath)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.rb_id)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.dt_red_st)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
+            @Html.ActionLink("Details", "Details", new { id=item.ID }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.ID })
+        </td>
+    </tr>
+}
+
+</table>

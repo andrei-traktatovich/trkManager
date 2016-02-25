@@ -1,0 +1,210 @@
+﻿@model BusinessLogic.CashIncomeAndExpenseManager.BalanceReportViewModel
+
+@{
+    ViewBag.Title = "BalanceReport";
+}
+
+
+<div style="font-size: x-small; width: 95%; margin: auto; height: 700px; overflow: scroll" class="text-center">
+    
+    <form>
+        @Html.DropDownList("monthID")
+        @Html.DropDownList("year")
+        @Html.CheckBox("xls") Получить детализацию расходов за месяц 
+        <button type="submit" class="btn btn-sm btn-info">Получить</button>
+    </form>
+    <div>
+        <h2>Остаток на конец дня</h2>
+        <table class="table table-condensed table-bordered">
+            <thead>
+                <tr>
+                    <th class="report-office-name"></th>
+                    @foreach (var date in Model.Dates)
+                    {
+                        <th class='report-amount text-center @(date == DateTime.Today ? "bg-info" : "")'>@(date.ToString("dd.MM.yy"))</th>
+                    }
+                    <th class="report-office-name"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var officeLine in Model.OfficeLines)
+                {
+                    <tr>
+                        <td><strong>@officeLine.Name</strong></td>
+                        @foreach (var balance in officeLine.Balances)
+                        {
+                            <td class='@(balance < 0 ? "bg-danger" : "") @(balance > 0 ? "bg-success" : "")'>@balance.ToString("c")</td>
+                        }
+                        <td><strong>@officeLine.Name</strong></td>
+                    </tr>
+                }
+                <tr>
+                    <td><strong>Итого</strong></td>
+                    @foreach (var totalBalance in Model.TotalBalances)
+                    {
+                        <td class='@(totalBalance < 0 ? "bg-danger" : "")'>@totalBalance.ToString("c")</td> 
+                    }
+                    <td><strong>Итого</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Выручка</h2>
+        <table class="table table-condensed  table-bordered">
+            <thead>
+                <tr>
+                    <th class="report-office-name"></th>
+                    @foreach (var date in Model.Dates)
+                    {
+                        <th class='report-amount text-center @(date == DateTime.Today ? "bg-info" : "")'>@(date.ToString("dd.MM.yy"))</th>
+                    }
+                    <th class="report-amount">Всего</th>
+                    <th class="report-office-name"></th>
+                </tr>
+
+            </thead>
+            <tbody>
+                @foreach (var officeLine in Model.OfficeLines)
+                {
+                    <tr>
+                        <td><strong>@officeLine.Name</strong></td>
+                        @foreach (var income in officeLine.Incomes)
+                        {
+                            <td class='@(income > 0 ? "bg-success" : "")'>@income.ToString("c")</td>
+                        }
+                        <td>@officeLine.IncomesPerOffice.ToString("c")</td>
+                        <td><strong>@officeLine.Name</strong></td>
+                    </tr>
+                }
+                <tr>
+                    <td><strong>Итого</strong></td>
+                    @foreach (var totalIncome in Model.TotalIncomes)
+                    {
+                        <td class='report-amount @(totalIncome > 0 ? "bg-success" : "")'>@totalIncome.ToString("c")</td> 
+                    }
+                    <td>@(Model.TotalIncomes.Sum(x => x).ToString("c"))</td>
+                    <td><strong>Итого</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Расходы</h2>
+        <table class="table table-condensed   table-bordered">
+            <thead>
+                <tr>
+                    <th class="report-office-name"></th>
+                    @foreach (var date in Model.Dates)
+                    {
+                        <th class='report-amount text-center  @(date == DateTime.Today ? "bg-info" : "")'>@(date.ToString("dd.MM.yy"))</th>
+                    }
+                    <th class="report-amount">Всего</th>
+                    <th class="report-office-name"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var officeLine in Model.OfficeLines)
+                {
+                    <tr>
+                        <td ><strong>@officeLine.Name</strong></td>
+                        @foreach (var expense in officeLine.Expenses)
+                        {
+                            <td class='@(expense > 0 ? "bg-success" : "")'>@(expense.ToString("c"))</td>
+                        }
+                        <td>@officeLine.ExpensesPerOffice.ToString("c")</td>
+                        <td><strong>@officeLine.Name</strong></td>
+                    </tr>
+                }
+                <tr>
+                    <td><strong>Итого</strong></td>
+                    @foreach (var totalExpense in Model.TotalExpenses)
+                    {
+                        <td class='@(totalExpense > 0 ? "bg-success" : "")'>@totalExpense.ToString("c")</td> 
+                    }
+                    <td>@(Model.TotalExpenses.Sum(x => x).ToString("c"))</td>
+                    <td><strong>Итого</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+
+
+
+        <h2>Внутренняя инкассация (+)</h2>
+        <table class="table table-condensed  table-bordered">
+            <thead>
+                <tr>
+                    <th class="report-office-name"></th>
+                    @foreach (var date in Model.Dates)
+                    {
+                        <th class='report-amount text-center @(date == DateTime.Today ? "bg-info" : "")'>@(date.ToString("dd.MM.yy"))</th>
+                    }
+                    <th class="report-amount">Всего</th>
+                    <th class="report-office-name"></th>
+                </tr>
+
+            </thead>
+            <tbody>
+                @foreach (var officeLine in Model.OfficeLines)
+                {
+                    <tr>
+                        <td><strong>@officeLine.Name</strong></td>
+                        @foreach (var internalCash in officeLine.InternalCashCollections)
+                        {
+                            <td class='@(internalCash > 0 ? "bg-success" : "")'>@internalCash.ToString("c")</td>
+                        }
+                        <td>@officeLine.InternalCashCollectionsPerOffice.ToString("c")</td>
+                        <td><strong>@officeLine.Name</strong></td>
+                    </tr>
+                }
+                <tr>
+                    <td><strong>Итого</strong></td>
+                    @foreach (var totalIntCash in Model.TotalInternalCash)
+                    {
+                        <td class='report-amount @(totalIntCash > 0 ? "bg-success" : "")'>@totalIntCash.ToString("c")</td> 
+                    }
+                    <td>@(Model.TotalInternalCash.Sum(x => x).ToString("c"))</td>
+                    <td><strong>Итого</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Инкассация</h2>
+        <table class="table table-condensed  table-bordered">
+            <thead>
+                <tr>
+                    <th class="report-office-name"></th>
+                    @foreach (var date in Model.Dates)
+                    {
+                        <th class='report-amount text-center @(date == DateTime.Today ? "bg-info" : "")'>@(date.ToString("dd.MM.yy"))</th>
+                    }
+                    <th class="report-amount">Всего</th>
+                    <th class="report-office-name"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var officeLine in Model.OfficeLines)
+                {
+                    <tr>
+                        <td><strong>@officeLine.Name</strong></td>
+                        @foreach (var balance in officeLine.CashCollections)
+                        {
+                            <td class='@(balance > 0 ? "bg-success" : "")'>@balance.ToString("c")</td>
+                        }
+                        <td>@officeLine.CashCollectionsPerOffice.ToString("c")</td>
+                        <td><strong>@officeLine.Name</strong></td>
+                    </tr>
+                }
+                <tr>
+                    <td><strong>Итого</strong></td>
+                    @foreach (var cash in Model.TotalCashCollections)
+                    {
+                        <td class='@(cash < 0 ? "bg-danger" : "")'>@cash.ToString("c")</td> 
+                    }
+
+                    <td>@(Model.TotalCashCollections.Sum(x => x).ToString("c"))</td>
+                    <td><strong>Итого</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

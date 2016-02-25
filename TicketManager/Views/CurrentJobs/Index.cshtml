@@ -1,0 +1,88 @@
+﻿@model List<BusinessLogic.EventTracer.AppointmentEventTraceItem>
+@{
+    ViewBag.Title = "Текушчая занятость";
+}
+
+<div class="container" style="width: auto">
+    <div class="row">
+        <h2>Текущая занятость переводчиков (тест)</h2>
+         
+
+        <div class="col-lg-10" style="overflow: auto">
+            <div id="chartContainer" style="height: 700px; width: 100%;">
+            </div>
+        </div>
+        <div class="col-lg-2">
+            <div style="height: 700px; width: 100%; overflow: auto;" class="text-sm;">
+                <div class="panel panel-info">
+                    <div class="panel-heading">Последние новости</div>
+                    <div class="panel-body">
+                        <ul class="list-group">
+                    <!-- latest jobs -->
+                    @foreach (var jobInfo in Model)
+                    {
+                        <li class="list-group-item">
+                            <div class="panel-default">
+                                <div class="panel-content">
+                                    <div class="panel-title">
+                                        @jobInfo.JobName
+                                    </div>
+                                    <div class="panel-content">
+                                        <span class="glyphicon glyphicon-user"></span>&nbsp; <strong>@jobInfo.Name</strong><br />
+                                        <span class="glyphicon glyphicon-wrench"></span>&nbsp;@jobInfo.JobTypeName<br />
+                                        <span class="glyphicon glyphicon-hand-right"></span>&nbsp;@jobInfo.StatusName<br />
+                                        <span class="glyphicon glyphicon-time"></span>&nbsp;@jobInfo.EndDate<br />
+                                    </div>
+                                </div>
+                            </div> 
+                        </li>
+                    }
+
+                </ul>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization',
+       'version':'1','packages':['timeline'], 'language' : 'ru' }]}">
+</script>
+<script type="text/javascript">
+
+    google.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+
+
+        $.getJSON('@(Url.Action("GetAll"))', function (data) {
+
+            var container = document.getElementById('chartContainer');
+            var chart = new google.visualization.Timeline(container);
+
+            var dataTable = new google.visualization.DataTable();
+            dataTable.addColumn({ type: 'string', id: 'Имя' });
+            dataTable.addColumn({ type: 'string', id: 'Заказ' });
+            dataTable.addColumn({ type: 'date', id: 'Start' });
+            dataTable.addColumn({ type: 'date', id: 'End' });
+            dataTable.addRows(flatten(data));
+            console.dir(data);
+            console.dir(flatten(data));
+            chart.draw(dataTable);
+
+            setTimeout(function () {
+                window.location.reload(1);
+            }, 60000);
+
+            function flatten(data) {
+                var result = [];
+                for (var i = 0; i < data.length; i++) {
+                    result.push([data[i].Name, data[i].JobInfo, moment(data[i].StartDate).toDate(), moment(data[i].EndDate).toDate()]);
+                }
+                return result;
+            }
+
+        });
+    }
+</script>

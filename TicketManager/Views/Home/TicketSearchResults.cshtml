@@ -1,0 +1,155 @@
+﻿@model IEnumerable<TicketDataModel.Ticket>
+
+
+@if(Model.Count() == 0)
+{
+    <p class="error-message">Ничего не найдено</p>
+} else
+{
+
+<div class="row-fluid">
+    <div class="span12">
+<table id="RequestsGrid" class="table table-condensed table-hover noselect">
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>
+            Отдел
+        </th>
+        <th>
+            Дата
+        </th>
+        <th>
+            Автор
+        </th>
+        <th>
+            Тип
+        </th>
+        <th>
+            Текст
+        </th>
+        <th>Куда</th>
+        <th>
+            Кому поручено
+        </th>
+        <th>
+            Изменено
+        </th>
+        <th>
+            Кем 
+        </th>
+        <th>
+            Срочность
+        </th>
+        <th>
+            Статус
+        </th>
+        <th>
+            Примечание к статусу
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) 
+{
+    string rowClass = "";
+    switch (item.StatusID)
+    {
+        case 0 : rowClass = "danger"; break;
+        case 1 : rowClass = "warning"; break;
+        case 2: rowClass = "error"; break;
+        case 3 : rowClass = "success"; break;
+        case 4: rowClass = "info"; break;
+        default: rowClass = ""; break;
+    }
+    <tr onclick="loadTicketDetails('@item.ID'); return false;"
+            class="@rowClass">
+        <td><strong>@item.ID</strong></td>        
+        <td> 
+            <em>@Html.DisplayFor(modelItem => item.Author.Office.Name)</em>
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CreatedDate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Author.Name)
+            <div class="additionalInfo">
+                (@Html.DisplayFor(modelItem => item.Author.Title.Name)
+                @Html.DisplayFor(modelItem => item.Author.Office.Name))
+            </div>
+
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TicketType.Name)
+        </td>
+        <td class="tickettitlecell">
+            <em>@item.KeyWords
+            </em>
+        </td>
+        <td>@item.AssigneeOffice.Name</td>
+        <td>
+            @if(item.Assignee != null)
+            {
+            @Html.DisplayFor(modelItem => item.Assignee.Name)
+            <div class="additionalInfo">
+                @Html.DisplayFor(modelItem => item.Assignee.Title.Name)
+                ,&nbsp
+                @Html.DisplayFor(modelItem => item.Assignee.Office.Name)
+                
+            </div>
+            }
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ChangedDate)
+        </td>
+        <td>
+            @if(item.ChangedBy !=null)
+            {
+            @Html.DisplayFor(modelItem => item.ChangedBy.Name)
+            <div class="additionalInfo">
+                @Html.DisplayFor(modelItem => item.ChangedBy.Title.Name)
+                ,&nbsp
+                @Html.DisplayFor(modelItem => item.ChangedBy.Office.Name)
+                
+            </div>
+            }
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TicketLevel.Name)
+        </td>
+        <td>
+            <strong>@Html.DisplayFor(modelItem => item.TicketStatus.Name)</strong>
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TicketStatusComment)
+        </td>
+    </tr>
+}
+    </tbody>
+</table>
+    </div>
+</div>
+
+}
+
+<script>
+    function loadTicketDetails(id) {
+        var url = '@Url.Content(Url.Action("TicketDetails"))';
+
+        var data = { id : parseInt(id) };
+
+        $('#progress').show();
+
+        $('#fulldescription').load(url, data, complete);
+        
+        function complete(responseText, status, XMLHttpRequest) {
+            $('#progress').hide();
+            if (status == 'error') {
+                ajaxErrorMessage();
+            }
+            else {
+                showPopup();
+            }
+        }
+    }
+</script>

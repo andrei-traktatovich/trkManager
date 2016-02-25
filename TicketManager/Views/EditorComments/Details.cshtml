@@ -1,0 +1,138 @@
+﻿@model List<IGrouping<string, TicketDataModel.JobGrade>>
+<button id="btntogglecols">Показать</button>
+<h3>Условные обозначения</h3>
+<p>
+    <img src="~/Images/warning.gif" />
+    негрубая ошибка, 
+    <img src="~/Images/error.gif" />
+    грубая ошибка
+</p>
+<!-- <div id="piechart1" style="width: 48%; height: 350px; float: left;">
+    piechart   
+</div>
+    -->
+@{var hideIfWithoutComments = (bool)ViewData["withCommentsOnly"];}
+
+<table id="grades-table" class="vert-lines" style="margin-left: 15%; width: 70%">
+    <thead>
+        <tr>
+            <th>Кому</th>
+            <th class="charted">Оценок</th>
+            <th class="charted">Средний балл</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            var badGrades = item.Where(x => x.Grade.HasValue
+                  && x.Grade.Value < 6)
+                  .Count();
+
+              var hasComments = item.Any(x => x.Comment.Trim() != "");
+              var tooltipText = string.Format("Оценок ниже 6: {0}", badGrades.ToString()); 
+              
+              if (!hideIfWithoutComments
+                  || (hideIfWithoutComments && hasComments))
+              { 
+            <tr class="info">
+
+
+                <td>
+                    <a href="#" onclick='toggleVisible(this); return false;'>@item.Key</a>
+                    @if (badGrades > 0)
+                    {
+                        <img src="~/Images/error.gif" class='easyui-tooltip' title="@tooltipText"  />
+                    }
+                </td>
+                <td>@item.Count()</td>
+                <td
+                    class="trend-@TicketDataModel.Translator.GetTendency(item.FirstOrDefault().Translator, (DateTime)ViewData["startDate"])">
+                    @Math.Round(item.Average(x => x.Grade ?? 0), 2)
+
+                </td>
+            </tr>
+            <tr style="display: none;">
+                <td colspan="3">
+                    <table class="nested-table shadowed vert-lines">
+                        <thead>
+                            <tr class="info">
+                                <th>Заказ</th>
+                                <th>Направление</th>
+                                <th>Тематика</th>
+                                <th>Тематика2</th>
+                                <th>Оценка</th>
+                                <th>Дата</th>
+                                <th class="toggleable">Факт</th>
+                                <th class="toggleable">Терм.</th>
+                                <th class="toggleable">Стиль</th>
+                                <th class="toggleable">Смысл</th>
+                                <th class="toggleable">Орф.</th>
+                                <th class="toggleable">Грам.</th>
+                                <th class="toggleable">Треб.</th>
+                                <th class="toggleable">Пропуски</th>
+                                <th class="toggleable">Срок</th>
+                                <th class="toggleable">формат</th>
+                                <th class="toggleable" style="width: 45%">Комментарий</th>
+                                <th class="toggleable">Автор</th>
+
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var line in item)
+                            {
+                                if (!hideIfWithoutComments || (hideIfWithoutComments && line.Comment.Trim() != ""))
+                                {
+                                <tr style="text-align: center" onclick="editGrade('@line.ID');">
+                                    <td class="big">@line.LegacyJobNo</td>
+                                    <td>@line.LegacyDirection</td>
+                                    <td>@line.LegacyDomain1</td>
+                                    <td>@line.LegacyDomain2</td>
+                                    <td class="big">@line.Grade</td>
+                                    <td>@line.GradeDate</td>
+                                    <td class="toggleable grade-@line.Fact"></td>
+                                    <td class="toggleable grade-@line.Term"></td>
+                                    <td class="toggleable grade-@line.Style"></td>
+                                    <td class="toggleable grade-@line.Sense"></td>
+                                    <td class="toggleable grade-@line.Spelling"></td>
+                                    <td class="toggleable grade-@line.Grammar"></td>
+                                    <td class="toggleable grade-@line.Requirements"></td>
+                                    <td class="toggleable grade-@line.Gaps"></td>
+                                    <td class="toggleable grade-@line.Delay"></td>
+                                    <td class="toggleable grade-@line.FormatError"></td>
+                                    <td style="text-align: left;">@line.Comment</td>
+                                    <td>@line.Author</td>
+
+
+                                </tr>
+                                }
+                            }
+
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+              }
+        }
+    </tbody>
+
+</table>
+<p>
+    Всего оценок за период: @Model.Sum(x => x.Count())
+</p>
+<script>
+    (function () {
+        var $btn = $('#btntogglecols');
+
+        $btn.on("click", function () {
+            $('.toggleable').toggle();
+            if ($btn.text() = 'Показать')
+                $btn.text('Скрыть');
+            else
+                $btn.text('Показать');
+
+        });
+
+        
+    }());
+</script>

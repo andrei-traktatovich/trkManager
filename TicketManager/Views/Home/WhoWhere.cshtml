@@ -1,0 +1,437 @@
+﻿@{
+    ViewBag.Title = "Кто где";
+}
+
+<script>
+    var d = new Date();
+    var currentMonth = d.getMonth();
+    var currentYear = d.getFullYear();
+    var calendarServiceURL = '@Url.Content(Url.Action("GetCalendarData"))';
+    var WhoWhereSearchResultsURL = '@Url.Content(Url.Action("WhoWhereSearchResults"))';
+    var translatorID = -1;
+    var updateCalendarURL = '@Url.Content(Url.Action("FeedMonthToCalendar"))';
+    var startID = null;
+    var calendarSelection;
+    var updatePermOfficeURL = '@Url.Content(Url.Action("UpdatePermOffice"))';
+    var updateTempOfficeURL = '@Url.Content(Url.Action("UpdateTempOffice"))';
+    var updateActiveStatusURL = '@Url.Content(Url.Action("UpdateActiveStatus"))';
+    var updateTempStatusURL = '@Url.Content(Url.Action("UpdateTempStatus"))';
+    var confirmStatusURL = '@Url.Content(Url.Action("ConfirmStatus"))';
+    var getWorkSheetTableURL = '@Url.Content(Url.Action("GetWorkSheetTable"))';
+    var downloadWorkSheetTableURL = '@Url.Content(Url.Action("DownLoadWorkSheetTable"))';
+    var getGlobalsURL = '@Url.Content(Url.Action("GetCalendarGlobals"))';
+    var updateTitleURL = '@Url.Content(Url.Action("UpdateTitle"))';
+</script>
+
+<div class="container" style="width: 95%; padding: 5px;">
+    <h2>Кто где (штатные сотрудники)</h2>
+    <div class="row">
+        <div class="col-md-8">
+            @using (Ajax.BeginForm("WhoWhereSearchResults", null, new AjaxOptions
+            {
+                HttpMethod = "Post",
+                InsertionMode = InsertionMode.Replace,
+                OnSuccess = "whoWhereSearchComplete",
+                LoadingElementId = "progress",
+                OnFailure = "whoWhereSearchFailure",
+                UpdateTargetId = "whoWhereSearchResultsTable",
+                Url = Url.Action("WhoWhereSearchResults")
+            },
+        new { @class = "well" }
+        ))
+            {
+                <div class="form-inline">
+                    @Html.TextBox("txtName", "", new { @class = "form-control", placeholder = "Имя содержит ..." })
+                    <span>&nbsp;|&nbsp;Офис&nbsp;</span>@Html.DropDownList("drdnOfficeID", ViewData["offices"] as List<SelectListItem>,
+                    new { @class = "form-control" })
+
+                    <em>
+                        @Html.CheckBox("showReserve")<span> резерв </span>@Html.CheckBox("showBlackList")<span> черный список </span>
+
+                        @if ((bool)ViewData["isHR"])
+                        {
+                            @Html.CheckBox("chkUnconfirmed")<span> с неподтвержденной отметкой </span>
+                        }
+                    </em>
+
+
+
+                    <button type="submit" id="whowhereformsubmit" class="btn btn-primary pull-right">
+                        <span class="glyphicon glyphicon-search"></span>
+                        Искать
+                    </button>
+                </div>
+        
+        
+            }
+        </div>
+        <div class="col-md-4"></div>
+    </div>
+    <div class="row" style="height: 600px; overflow: auto">
+        <div id="whoWhereSearchResultsTable">
+        </div>
+    </div>
+
+    <!-- popups -->
+
+
+
+    <div class='modal fade' id='calendar-popup' tabindex="-1">
+        <div class="modal-dialog" style="width: 800px;">
+            <div class="modal-content" id="calendar-area">
+                <div class="modal-header">
+                    <a href="#" class="close" data-dismiss="modal">&times;</a>
+                    <h1 data-bind="text: name"></h1>
+                </div>
+                <div class="modal-body">
+
+                    <!-- placeholder for details view -->
+
+
+                    <!-- menu -->
+                    <div class="well" data-bind="style: { display: $root.canEdit() ? 'block' : 'none' }">
+                        Перевести в офис:
+                            <select id="menu-officenow" class="dropmenu" data-bind="options: globals.offices, optionsText: 'name', value: globals.selectedOffice, click: function () { $root.applyOffice(globals.selectedOffice); }" style="width: 300px; overflow: scroll;">
+                            </select>
+
+                        <ul class="list-inline unstyled">
+                            <li>
+                                <div class="dropdown">
+                                    <button class="btn btn-default btn-sm" data-toggle="dropdown">Отметка о явке<span class="caret"></span></button>
+
+                                    <ul class="dropdown-menu" data-bind="foreach: globals.staffStatuses">
+                                        <li><a href="#" data-bind="text: name, click: $root.applyStaffStatus"></a></li>
+
+                                    </ul>
+                                </div>
+                            </li>
+                            <li>
+
+                                <div class="dropdown">
+                                    <button class="btn btn-default btn-sm" data-toggle="dropdown">Подтвердить отметку<span class="caret"></span></button>
+
+                                    <ul class="dropdown-menu">
+                                        <li><a href="#" data-bind="click: $root.confirmSelection">Подтвердить</a></li>
+                                        <li><a href="#" data-bind="click: $root.disconfirmSelection">Отменить</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="dropdown">
+                                    <button class="btn btn-default btn-sm" data-toggle="dropdown">Дежурство<span class="caret"></span></button>
+
+                                    <ul class="dropdown-menu">
+                                        <li><a href="#" data-bind="click: $root.setStandBy">Дежурный</a></li>
+                                        <li><a href="#" data-bind="click: $root.removeStandBy">Недежурный</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+                        </ul>
+
+
+
+                        <input type="text" style="width: 500px;" placeholder="комментарий к отметке ..." id="inp-comment" />
+                        <a href="#" class="easyui-linkbutton" data-options="plain:true" data-bind="click: $root.addComment">Добавить</a>
+                    </div>
+
+                    @*<div id="menu-officenow" class="dropmenu" data-bind="foreach: globals.offices" style="width: 300px; overflow: scroll;">
+                    <div data-bind="text: name, click: $root.applyOffice"></div>
+                </div>*@
+
+
+
+
+
+
+                    <a href="#" class="btn btn-sm btn-default" data-bind="click: function () { $root.moveToPreviousMonth(); }"><<</a>
+                    <span data-bind="text: timeRange" style="font-weight: bold;"></span>
+                    <a href="#" class="btn btn-sm btn-default" data-bind="click: function () { $root.moveToNextMonth(); }">>></a>
+
+                    <a href="#" class="btn btn-sm btn-default" data-bind="click: clearAll">Снять выделение</a>
+                    <a href="#" class="btn btn-sm btn-default" data-bind="click: selectAll">Выделить все</a>
+
+                    <div id="calendar-body" class="no-select" style="overflow: hidden;">
+                        <div>
+
+                            <div class="day header easyui-tooltip" data-bind="click: function () { $root.selectWeekDay(1); }" title="Кликните, чтобы выделить/очистить весь столбец">Пн</div>
+                            <div class="day header easyui-tooltip" data-bind="click: function () { $root.selectWeekDay(2); }" title="Кликните, чтобы выделить/очистить весь столбец">Вт</div>
+                            <div class="day header easyui-tooltip" data-bind="click: function () { $root.selectWeekDay(3); }" title="Кликните, чтобы выделить/очистить весь столбец">Ср</div>
+                            <div class="day header easyui-tooltip" data-bind="click: function () { $root.selectWeekDay(4); }" title="Кликните, чтобы выделить/очистить весь столбец">Чт</div>
+                            <div class="day header easyui-tooltip" data-bind="click: function () { $root.selectWeekDay(5); }" title="Кликните, чтобы выделить/очистить весь столбец">Пт</div>
+                            <div class="day header weekend easyui-tooltip" data-bind="click: function () { $root.selectWeekDay(6); }" title="Кликните, чтобы выделить/очистить весь столбец">Сб</div>
+                            <div class="day header weekend easyui-tooltip" data-bind="click: function () { $root.selectWeekDay(7); }" title="Кликните, чтобы выделить/очистить весь столбец">Вс</div>
+                        </div>
+                        <div class='clear-float'></div>
+
+                        <div data-bind="foreach: weeks" class="no-select">
+
+                            <div data-bind="style: { marginLeft: offset }" class="week no-select">
+
+
+                                <div data-bind="foreach: days" class="no-select">
+
+                                    <div data-bind="click: selectDay, css: { selected: selected, 'day-confirmed': Confirmed, 'employee-stand-by': StandBy }, attr: { title: Comment() + (Author() ? ' (' + (Author() + ', ' + LastChanged() + ')') : '') }"
+                                        class="day no-select">
+
+                                        <div class="date-area" data-bind="text: date">
+                                        </div>
+                                        <div class="office-area" data-bind="text: Office"></div>
+                                        <div class="status-area" data-bind="text: Status.Name"></div>
+                                    </div>
+                                </div>
+                                <div class="easyui-tooltip week-switch" title='Кликните, чтобы выделить/очистить всю неделю (кроме выходных)'>
+                                    <a href="#" class="btn btn-sm btn-default weekno" data-options="plain:true" data-bind="text: ($index() + 1), click: function () { $root.selectWeek($data); }"
+                                        title='Кликните, чтобы выделить/очистить всю неделю (кроме выходных)'></a>
+
+
+
+                                </div>
+                                <div class="clear-float"></div>
+
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-success" data-bind="click: $root.commit, style: { display: $root.isDirty() ? 'inline' : 'none' }"
+                        title="Нажмите меня!">Сохранить</a>
+                    <button class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- popups -->
+
+<div class='modal fade' id='tabel' tabindex="-1">
+    <div class="modal-dialog" style="width: 900px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a href="#" class="close" data-dismiss="modal">&times;</a>
+
+            </div>
+            <div class="modal-body">
+                <p>Даты:</p>
+                <div id="tabel-nav" class="search-criteria-panel inline">
+                    @using (Ajax.BeginForm(new AjaxOptions
+                {
+                    HttpMethod = "Post",
+                    InsertionMode = InsertionMode.Replace,
+                    LoadingElementId = "progress",
+                    UpdateTargetId = "tabel-info",
+                    Url = Url.Action("GetWorkSheetTable")
+                }))
+                    {
+                        var startDate = DateTime.Today.AddDays(-DateTime.Today.Day + 1);
+                            
+                        @Html.TextBox("startDate", startDate.ToString("dd.MM.yyyy"), new { @class = "easyui-datebox date-picker", data_options = "formatter:russianFormatter,parser:datetimeParser" })
+                        @Html.TextBox("endDate", startDate.AddMonths(1).AddDays(-1).ToString("dd.MM.yyyy"), new { @class = "easyui-datebox date-picker", data_options = "formatter:russianFormatter,parser:datetimeParser" })
+                        @Html.Hidden("officeID")
+                        <input type="submit" class="btn btn-primary" onclick="$('#officeID').val($('#drdnOfficeID').val());" value="Получить" />
+                    }
+                </div>
+                <div id="tabel-info" style="width: 100%; height: 500px; overflow: auto;"></div>
+            </div>
+            <div class="modal-footer">
+
+                <button class="btn btn-default" data-dismiss="modal">Отмена</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class='modal fade' id='popup-change-title' tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a href="#" class="close" data-dismiss="modal">&times;</a>
+                <h1 id="popup-change-title-trname"></h1>
+            </div>
+            <div class="modal-body">
+                <h2>Новая должность:</h2>
+                @Html.DropDownList("popup-change-titleid")
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" data-dismiss="modal" value="Сохранить" id="popup-change-title-submit">Сохранить</button>
+                <button class="btn btn-default" data-dismiss="modal">Отмена</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class='modal fade' id='popup-change-perm-office' tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a href="#" class="close" data-dismiss="modal">&times;</a>
+                <h1 id="popup-change-perm-office-trname"></h1>
+            </div>
+            <div class="modal-body">
+                <h2>Новое место постоянной работы:</h2>
+                @Html.DropDownList("popup-change-perm-office-officeid", ViewData["offices"] as List<SelectListItem>,
+                        new { @class = "form-control" })
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" data-dismiss="modal" value="Сохранить" id="popup-change-perm-office-submit">Сохранить</button>
+                <button class="btn btn-default" data-dismiss="modal">Отмена</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class='modal fade' id='popup-change-temp-office' tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a href="#" class="close" data-dismiss="modal">&times;</a>
+                <h1 id="popup-change-temp-office-trname"></h1>
+            </div>
+            <div class="modal-body">
+                <h2>Сегодня работает в офисе:</h2>
+                @Html.DropDownList("popup-change-temp-office-officeid", ViewData["offices"] as List<SelectListItem>,
+                        new { @class = "form-control" })
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" data-dismiss="modal" value="Сохранить" id="popup-change-temp-office-submit">Сохранить</button>
+                <button class="btn btn-default" data-dismiss="modal">Отмена</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class='modal fade' id='popup-change-staff-status' tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a href="#" class="close" data-dismiss="modal">&times;</a>
+                <h1 id="popup-change-staff-status-trname"></h1>
+            </div>
+            <div class="modal-body">
+                <h2>Отметка в табеле на сегодня:</h2>
+                @Html.DropDownList("popup-change-staff-statusId")
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" data-dismiss="modal" value="Сохранить" id="popup-change-staff-status-submit">Сохранить</button>
+                <button class="btn btn-default" data-dismiss="modal">Отмена</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class='modal fade' id='popup-change-active-status' tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a href="#" class="close" data-dismiss="modal">&times;</a>
+                <h1 id="popup-change-active-status-trname"></h1>
+            </div>
+            <div class="modal-body">
+                <h2>Новый статус</h2>
+                @Html.DropDownList("popup-change-active-status-statusid", ViewData["activestatuses"] as SelectList, new { @class = "form-control" })
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" data-dismiss="modal" id="popup-change-active-status-submit">Сохранить</button>
+                <button class="btn btn-default" data-dismiss="modal">Закрыть</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<div id="popup" class="invisible overflow-auto calendarpopup easyui-dialog" data-options="closed:true">
+    <h3>
+        <span id="popuptitle-translator-name"></span>&nbsp;
+        <span id="popuptitle-date"></span>
+    </h3>
+    <a id="monthBack" href="#">Предыдущий месяц</a> | 
+    <a id="monthForward" href="#">Следующий месяц</a>
+    <div id="calendar" class="no-select" style="overflow: hidden;">
+        <div id="calendar-header">
+            <div class="day header">Пн</div>
+            <div class="day header">Вт</div>
+            <div class="day header">Ср</div>
+            <div class="day header">Чт</div>
+            <div class="day header">Пт</div>
+            <div class="day header weekend">Сб</div>
+            <div class="day header weekend">Вс</div>
+        </div>
+        <div class='clear-float'></div>
+    </div>
+
+    <div id="changeStatusPopup" class=" invisible change-status-popup easyui-dialog" data-options="closed: true" title="Изменение статуса занятости">
+        <div class="easyui-tooltip" title="Этот офис будет считаться местом работы сотрудника на выбранный вами период">
+            <span>Текущий офис</span><br />
+            @Html.DropDownList("drdnOfficeSelector", ViewData["offices"] as List<SelectListItem>)
+        </div>
+        <hr />
+
+        <span>Cтатус</span><br />
+        <select id="drdnStatusSelector">
+            <option value="1">Не работает</option>
+
+            <option value="2">Явка</option>
+            <option value="3">Удаленно</option>
+            <option value="4">Выходной</option>
+            <option value="5">Оплачиваемый отгул</option>
+            <option value="6">Оплачиваемый отпуск</option>
+            <option value="7">Неоплачиваемый отпуск, отгул</option>
+            <option value="8">Невыход, прогул</option>
+            <option value="9">Больничный</option>
+            <option value="10">Командировка</option>
+            <option value="11">Уволен</option>
+        </select>
+        &nbsp;
+        <div class="easyui-tooltip" title="В течение выбранного Вами периода сотрудник будет считаться дежурным">@Html.CheckBox("chkStandBy")<span>Дежурство</span></div>
+        <hr />
+        <span>Комментарий: </span>@Html.TextBox("txtTranslatorComment")<hr />
+
+        <div class="easyui-tooltip" title="Поставьте галочку, если это фактическое состояние сотрудника, которое можно вносить в табель">@Html.CheckBox("chkConfirmed")Подтвердить</div>
+
+        <button value="Сохранить" onclick="submitToUpdateCalendar();">Сохранить</button>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+    function doPageSettings() {
+        $('#txtName').keyup(function () {
+            $('#drdnOfficeID').attr("disabled", $('#txtName').val() != '');
+        });
+
+        $('#filter-div').mouseleave(function () { $(this).fadeOut(); });
+
+        var browserWidth = $(window).width();
+        $('#calendar-container').width(browserWidth);
+        $('#calendar-container').height(700);
+
+        if (calendarServiceURL)
+            window.calendar = new Calendar(calendarServiceURL, updateCalendarURL, getGlobalsURL, new HTTPService());
+
+        $('#whowhereformsubmit').trigger('click');
+    }
+
+</script>

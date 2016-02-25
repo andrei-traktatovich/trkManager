@@ -1,0 +1,38 @@
+﻿@model IEnumerable<TicketDataModel.Job>
+<table>
+    <tr>
+        <th>№</th>
+        <th>Вид работ</th>
+        <th>Направление</th>
+        <th>Статус</th>
+        <th>Исполнители</th>
+        <th>Сумма итог</th>
+        <th>Сумма итог со скидкой</th>
+        <th>Объем заказчику</th>
+    </tr>
+    @foreach (var job in Model)
+    {
+        <tr>
+            <td>@job.Name</td>
+            <td>@job.JobType.Name</td>
+            <td>@job.LanguageDirection.Name</td>
+            <td>@job.JobStatus.Name</td>
+            <td class="hoverable">
+                @if (job.JobParticipants != null)
+                {
+                    @job.JobParticipants.Count()
+                    if (job.JobParticipants.Count() > 0)
+                    {
+                    <div style="position: absolute;">
+                        @{Html.RenderAction(actionName: "JobParticipants", controllerName: "Job", routeValues: new { id = job.ID });}
+                    </div>
+                    }
+                }
+            </td>
+            <td>@((job.AmountFinal ?? 0).ToString("C"))</td>
+            <td>@((job.DiscountedAmount ?? 0).ToString("C"))</td>
+            <td>@((job.FinalPagesCountForCustomer))</td>
+        </tr>
+    }
+</table>
+

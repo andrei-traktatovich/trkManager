@@ -1,0 +1,440 @@
+﻿@model List<TicketManager.Controllers.JobController.EmployeeRow>
+
+@if (Model.Count() == 0)
+{
+    <p>Ничего не найдено</p>
+}
+else
+{
+    int searchDuration = Convert.ToInt16(ViewData["searchDuration"]);
+    var showHours = (bool)ViewData["showHours"];
+    var date = (DateTime)ViewData["date"];
+    int Width;
+    string cellWidth = showHours ? "70px" : "100px";
+    int intcellWidth = showHours ? 70 : 100;
+    bool hideVacant = (bool)ViewData["hideVacant"];
+    var SelectedLanguageDirection = (int)ViewData["selectedLanguage"];
+    DateTime startDateTime = DateTime.Now;
+    <p>
+        Всего результатов: @Model.Count(). Продолжительность @searchDuration мс.
+        @if (hideVacant)
+        {
+            <span>(информация о незанятых исполнителях скрыта).</span>
+        }
+    </p>
+    <div id="calendar-header-and-content">
+        <table id='jobs-schedule-table' class="table-calendar no-select">
+            <thead>
+                <tr>
+                    <th class="employee-name"></th>
+                    @if (showHours)
+                    {
+                        var d = new DateTime(date.Year, date.Month, date.Day, 9, 0, 0);
+                        Width = 11 * 2;
+                        while (d.Hour < 20)
+                        {
+                        <th style="min-width: 70px; width: 70px; max-width: 70px; text-align: center;"><strong>@d.ToString("HH.mm")</strong></th>
+                            d = d.AddMinutes(30);
+                        }
+
+                    }
+                    else
+                    {
+
+                        var endDate = (DateTime)ViewData["endDate"];
+                        Width = (int)(endDate.Subtract(date).TotalDays);
+
+                        for (var curDate = date.Date; curDate < endDate.Date; curDate = curDate.AddDays(1))
+                        {
+                        <th style="min-width: 100px; width: 100px; max-width: 100px; text-align: center;" class='@(curDate.Date.DayOfWeek == DayOfWeek.Sunday || curDate.Date.DayOfWeek == DayOfWeek.Saturday ? "schedule-weekend" : "")'><strong>@curDate.Date.ToString("dd.MM")</strong></th>
+                        }
+                    }
+                </tr>
+            </thead>
+            <!-- data rows -->
+
+            <tbody>
+                @foreach (var employee in Model)
+                {
+                    var count = employee.JobDataLines.Count;
+                    if (count == 0)
+                    {
+                        if (!hideVacant)
+                        {
+                    <tr class="fat-upper-border">
+                        <td class="employee-name">
+                            <div style="position: relative;">
+                                @employee.Employee.Name&nbsp;<em><small>(@(employee.Employee.Title != null ? employee.Employee.Title.Name : ""), @employee.Employee.active
+                                    , @employee.Employee.CurrentStatus.Name
+                                    @if(employee.Employee.StatusValidThrough.HasValue) 
+                                    {
+                                        <span> до </span>@employee.Employee.StatusValidThrough.Value.ToString("dd.MM.yy")
+                                    }
+                                    )
+                                 @if (SelectedLanguageDirection > 0)
+                                 {
+                                     var d = employee.Employee.TranslationDirections.Where(x => x.LanguageID == SelectedLanguageDirection).FirstOrDefault();
+                                     if (d != null)
+                                     {
+                                     @d.MinWrittenTranslationRate <span>..</span>@d.MaxWrittenTranslationRate
+                                     <img src='@(Url.Content(string.Format("~/Images/{0}star.gif", d.Competence.ToString())))' />
+                                     <span class="quality-@d.LanguageQA">@d.LanguageQA</span>
+                                     }
+                                 }
+
+                                </small></em>
+
+                                <div class="invisible drop-down-info">
+
+                                    <table>
+                                        <tr>
+                                            <td>Роли
+                                            </td>
+                                            <td>
+                                                @{var r = string.Join(", ", employee.Employee.TranslatorRoles.Select(x => x.Name).ToList());}
+                                                @r
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>Тел.моб.</td>
+                                            <td>
+                                                @foreach (var t in employee.Employee.PersonalInfos)
+                                                {
+                                                    <a href="dial:@t.MobilePhone">@t.MobilePhone</a><br />
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Тел.раб.</td>
+                                            <td>
+                                                @foreach (var t in employee.Employee.PersonalInfos)
+                                                {
+                                                    <a href="dial://@t.MobilePhone">@t.Phone</a><br />
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Тел.дом.</td>
+                                            <td>
+                                                @foreach (var t in employee.Employee.PersonalInfos)
+                                                {
+                                                    <a href="dial://@t.HomePhone">@t.MobilePhone</a><br />
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Email</td>
+                                            <td>
+                                                @foreach (var t in employee.Employee.PersonalInfos)
+                                                {
+                                                    <a href="mailto:@t.Email">@t.Email</a><br />
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Skype</td>
+                                            <td>
+                                                @foreach (var t in employee.Employee.PersonalInfos)
+                                                {
+                                                    <a href="skype://@t.Skype">@t.Skype</a><br />
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Icq</td>
+                                            <td>
+                                                @foreach (var t in employee.Employee.PersonalInfos)
+                                                {
+                                                    <span>@t.ICQ</span><br />
+                                                }
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </td>
+                        @for (var i = 1; i <= Width; i++)
+                        {
+                            <td></td>
+                        }
+                    </tr>
+                        }
+                    }
+                    else
+                    {
+                    <tr class="fat-upper-border">
+
+                        <td rowspan="@count" class="employee-name">
+                            <div style="position: relative;">
+                                @employee.Employee.Name&nbsp;<em><small>(@(employee.Employee.Title != null ? employee.Employee.Title.Name : ""), @employee.Employee.active
+                                    , @employee.Employee.CurrentStatus.Name
+                                    @if(employee.Employee.StatusValidThrough.HasValue) 
+                                    {
+                                        <span> до </span>@employee.Employee.StatusValidThrough.Value.ToString("dd.MM.yy")
+                                    }
+                                    )
+                                 @if (SelectedLanguageDirection > 0)
+                                 {
+                                     var d = employee.Employee.TranslationDirections.Where(x => x.LanguageID == SelectedLanguageDirection).FirstOrDefault();
+                                     if (d != null)
+                                     {
+                                     @d.MinWrittenTranslationRate <span>..</span>@d.MaxWrittenTranslationRate
+                                     <img src='@(Url.Content(string.Format("~/Images/{0}star.gif", d.Competence.ToString())))' />
+                                     <span class="quality-@d.LanguageQA">@d.LanguageQA</span>
+                                     }
+                                 }
+
+
+                                </small></em>
+
+                                <div class="invisible drop-down-info">
+                                    <table>
+                                        <tr>
+                                            <td>Роли
+                                            </td>
+                                            <td>
+                                                @{var r = string.Join(", ", employee.Employee.TranslatorRoles.Select(x => x.Name).ToList());}
+                                                @r
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>Тел.моб.</td>
+                                            <td>
+                                                @foreach (var t in employee.Employee.PersonalInfos)
+                                                {
+                                                    <span>@t.MobilePhone</span><br />
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Тел.раб.</td>
+                                            <td>
+                                                @foreach (var t in employee.Employee.PersonalInfos)
+                                                {
+                                                    <span>@t.Phone</span><br />
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Тел.дом.</td>
+                                            <td>
+                                                @foreach (var t in employee.Employee.PersonalInfos)
+                                                {
+                                                    <span>@t.HomePhone</span><br />
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Email</td>
+                                            <td>
+                                                @foreach (var t in employee.Employee.PersonalInfos)
+                                                {
+                                                    <span>@t.Email</span><br />
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Skype</td>
+                                            <td>
+                                                @foreach (var t in employee.Employee.PersonalInfos)
+                                                {
+                                                    <span>@t.Skype</span><br />
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Icq</td>
+                                            <td>
+                                                @foreach (var t in employee.Employee.PersonalInfos)
+                                                {
+                                                    <span>@t.ICQ</span><br />
+                                                }
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </td>
+
+                        @{var l = employee.JobDataLines[0];}
+
+                        @for (var i = 0; i < Width; i++)
+                        {
+                            // add new stuff
+                            var text = "";
+                            var length = 1;
+                            var found = false;
+                            for (var g = 0; g < l.Length; g++)
+                            {
+                                if (l[g].Offset == i)
+                                {
+                                    length = l[g].Length + 1;
+                                    text = l[g].JobInfo.JobName;
+                                    var statusClass = "";
+                                    switch (l[g].JobInfo.JobParticipantStatus.ID)
+                                    {
+                                        case 0: statusClass = "job-new"; break;
+                                        case 1: statusClass = "job-new"; break;
+                                        case 2: statusClass = "job-new"; break;
+                                        case 3: statusClass = "job-in-progress"; break;
+                                        case 4: statusClass = "job-completed"; break;
+                                        case 5: statusClass = "job-completed"; break;
+                                        case 6: statusClass = "job-cancelled"; break;
+                                        case 7: statusClass = "job-problem"; break;
+                                        case 8: statusClass = "job-problem"; break;
+
+                                    }
+                            <td colspan="@(length)" class="@statusClass">
+                                <div class="calendar-job-no-info-area">
+                                    <span class="calendar-job-no">@text</span> (<span style="font-size: xx-small;">@l[g].JobInfo.JobParticipantStatus.Name)</span>
+                                    <div class="invisible drop-down-info">
+                                        @Ajax.ActionLink(string.Format("Подробности о заказе {0}", text), "Details", new { id = l[g].JobInfo.JobID }, new AjaxOptions
+                               {
+                                   InsertionMode = InsertionMode.Replace,
+                                   UpdateTargetId = "job-details-pane",
+                                   LoadingElementId = "progress",
+                                   OnSuccess = "showJobDetailsPane"
+                               })
+                                        <!-- @Html.ActionLink(string.Format("Подробности о заказе {0}", text), "Details", new { id = l[g].JobInfo.JobID })-->
+                                        <ul class="job-data-dropdown-list">
+                                            <li>@l[g].JobInfo.JobType.Name (@l[g].JobInfo.LanguageDirection.Name)</li>
+                                            <li>к @l[g].JobInfo.EndDate. Менеджер: @l[g].JobInfo.Job.ParentManagerName</li>
+                                            <li>Статус: @l[g].JobInfo.JobParticipantStatus.Name</li>
+                                            @if (l[g].JobInfo.ComletionDateActual != null)
+                                            {
+                                                <li><span>Фактическая сдача: </span>@l[g].JobInfo.ComletionDateActual</li>
+                                            }
+
+                                        </ul>
+                                        @{IEnumerable<TicketDataModel.JobParticipant> participants;
+                                          var myID = l[g].JobInfo.TranslatorID;
+                                          if (l[g].JobInfo.Job.MainJobParticipant != null)
+                                          {
+                                              participants = l[g].JobInfo.Job.MainJobParticipant.Job.JobParticipants;
+                                          }
+                                          else
+                                          {
+                                              participants = l[g].JobInfo.Job.JobParticipants;
+                                          }
+                                          participants = participants.Where(x => x.TranslatorID != myID);
+
+                                          if (participants.Count() > 0)
+                                          {
+                                            <h3>Другие исполнители</h3>
+                                            @Html.Partial("JobParticipants", participants)
+                                          }
+                                        }
+                                    </div>
+                                </div>
+                            </td>
+                                          found = true;
+                                          i = i + length - 1;
+                                }
+                            }
+                            if (!found)
+                            {
+                            <td></td>
+                            }
+                        }
+                    </tr>
+                        if (count > 1)
+                        {
+                            for (var j = 1; j < count; j++)
+                            {
+                                l = employee.JobDataLines[j];
+                    <tr>
+                        @for (var i = 0; i < Width; i++)
+                        {
+                            // add new stuff
+                            var text = "";
+                            var length = 1;
+                            var found = false;
+                            for (var g = 0; g < l.Length; g++)
+                            {
+                                if (l[g].Offset == i)
+                                {
+                                    length = l[g].Length + 1;
+                                    text = l[g].JobInfo.JobName;
+                                    var statusClass = "";
+                                    switch (l[g].JobInfo.JobParticipantStatus.ID)
+                                    {
+                                        case 0: statusClass = "job-new"; break;
+                                        case 1: statusClass = "job-new"; break;
+                                        case 2: statusClass = "job-new"; break;
+                                        case 3: statusClass = "job-in-progress"; break;
+                                        case 4: statusClass = "job-completed"; break;
+                                        case 5: statusClass = "job-completed"; break;
+                                        case 6: statusClass = "job-cancelled"; break;
+                                        case 7: statusClass = "job-problem"; break;
+                                        case 8: statusClass = "job-problem"; break;
+
+                                    }
+                            <td colspan="@(length)" class="@statusClass">
+                                <div class="calendar-job-no-info-area">
+                                    <span class="calendar-job-no">@text</span> (<span style="font-size: xx-small;">@l[g].JobInfo.JobParticipantStatus.Name)</span>
+                                    <div class="invisible drop-down-info">
+                                        @Ajax.ActionLink(string.Format("Подробности о заказе {0}", text), "Details", new { id = l[g].JobInfo.JobID }, new AjaxOptions
+                               {
+                                   InsertionMode = InsertionMode.Replace,
+                                   UpdateTargetId = "job-details-pane",
+                                   LoadingElementId = "progress",
+                                   OnSuccess = "showJobDetailsPane"
+                               })
+                                        <!-- @Html.ActionLink(string.Format("Подробности о заказе {0}", text), "Details", new { id = l[g].JobInfo.JobID })-->
+                                        <ul class="job-data-dropdown-list">
+                                            <li>@l[g].JobInfo.JobType.Name (@l[g].JobInfo.LanguageDirection.Name)</li>
+                                            <li>к @l[g].JobInfo.EndDate. Менеджер: @l[g].JobInfo.Job.ParentManagerName</li>
+                                            <li>Статус: @l[g].JobInfo.JobParticipantStatus.Name</li>
+                                            @if (l[g].JobInfo.ComletionDateActual != null)
+                                            {
+                                                <li><span>Фактическая сдача: </span>@l[g].JobInfo.ComletionDateActual</li>
+                                            }
+
+                                        </ul>
+                                        @{IEnumerable<TicketDataModel.JobParticipant> participants;
+                                          var myID = l[g].JobInfo.TranslatorID;
+                                          if (l[g].JobInfo.Job.MainJobParticipant != null)
+                                          {
+                                              participants = l[g].JobInfo.Job.MainJobParticipant.Job.JobParticipants;
+                                          }
+                                          else
+                                          {
+                                              participants = l[g].JobInfo.Job.JobParticipants;
+                                          }
+                                          participants = participants.Where(x => x.TranslatorID != myID);
+
+                                          if (participants.Count() > 0)
+                                          {
+                                            <h3>Другие исполнители</h3>
+                                            @Html.Partial("JobParticipants", participants)
+                                          }
+                                        }
+                                    </div>
+                                </div>
+                            </td>
+                                          found = true;
+                                          i = i + length - 1;
+                                }
+                            }
+                            if (!found)
+                            {
+                            <td></td>
+                            }
+                        }
+                    </tr>
+                            }
+                        }
+
+                    }
+                }
+            </tbody>
+
+        </table>
+        
+    </div>
+    
+}
+
+

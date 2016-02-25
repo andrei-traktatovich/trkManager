@@ -1,0 +1,52 @@
+﻿@model List<IGrouping<string, TicketDataModel.TicketType>>
+
+@{
+    ViewBag.Title = "Список";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Создать новый тип заявки", "Create")
+</p>
+<table>
+    <tr>
+        <th style="width: 200px;">
+            Наименование
+        </th>
+        <th style="width:450px;">
+            Действителен для офисов
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Key)
+        </td>
+        <td>
+            @{if (item.Any(x => x.OfficeID == 0))
+              {
+                  <span>Все</span>
+              }
+              else
+              {
+                  var offices = item.Select(x=>x.Office.Name).ToList();
+                  foreach (var office in offices)
+                  {
+                      <div class="brick">@office</div>
+                  }
+              }
+            }
+            
+        </td>
+        
+        <td>
+            
+            @Html.ActionLink("Удалить", "Delete", new { key=item.Key })
+        </td>
+    </tr>
+}
+
+</table>

@@ -1,0 +1,72 @@
+﻿body {
+}
+
+.table-scroll-area {
+    height: 650px;
+    overflow: auto;
+}
+
+.highlight {
+    background-color: #f7ef98;
+}
+
+.day-header {
+  background-color: #ddf3f5;
+  font-weight: bold;
+  font-size: larger;
+  height:30px;
+}
+
+.day-footer {
+    background-color: #b6dfe4;
+    font-weight: bold;
+    font-size: larger;
+}
+
+.dirtyitem {
+    background-color: #f7ef98;
+}
+
+.upload-in-progress {
+}
+
+.align-left {
+    text-align: left;
+}
+
+.align-right {
+    text-align: right;
+}
+
+.align-middle {
+    text-align: center;
+}
+
+.inline {
+    display: inline;
+}
+
+.visible-on-hover {
+    display: none;
+}
+
+tr:hover .visible-on-hover {
+    display: inline;
+}
+
+.invalid {
+    background-color: #f00;
+}
+
+.large {
+    font-size: large;
+    font-weight: bold;
+}
+
+.control-xs {
+    font-size: x-small;
+}
+
+.actioncell {
+    width: 40px;
+}

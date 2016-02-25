@@ -1,0 +1,694 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{9086986D-88F7-476D-910D-842BB7606EFB}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TicketManager</RootNamespace>
+    <AssemblyName>TicketManager</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication>disabled</IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>enabled</IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PackageAsSingleFile>false</PackageAsSingleFile>
+    <DeployIisAppPath>testapp/TicketManager_deploy</DeployIisAppPath>
+    <FilesToIncludeForPublish>AllFilesInTheProject</FilesToIncludeForPublish>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Antlr3.Runtime">
+      <HintPath>..\packages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="ClosedXML">
+      <HintPath>..\packages\DoddleReport.OpenXml.1.4\lib\net40\ClosedXML.dll</HintPath>
+    </Reference>
+    <Reference Include="DocumentFormat.OpenXml, Version=2.0.5022.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\DoddleReport.OpenXml.1.4\lib\net40\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
+    <Reference Include="DoddleReport, Version=1.4.0.0, Culture=neutral, PublicKeyToken=183ffec7490b24a9, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\DoddleReport.OpenXml.1.4\lib\net40\DoddleReport.dll</HintPath>
+    </Reference>
+    <Reference Include="DoddleReport.OpenXml">
+      <HintPath>..\packages\DoddleReport.OpenXml.1.4\lib\net40\DoddleReport.OpenXml.dll</HintPath>
+    </Reference>
+    <Reference Include="DoddleReport.Web">
+      <HintPath>..\packages\DoddleReport.Web.1.4\lib\net40\DoddleReport.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="RestSharp">
+      <HintPath>..\packages\RestSharp.105.1.0\lib\net45\RestSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.3\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Optimization">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.Net.Http">
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest">
+    </Reference>
+    <Reference Include="Twilio.Api">
+      <HintPath>..\packages\Twilio.4.0.3\lib\3.5\Twilio.Api.dll</HintPath>
+    </Reference>
+    <Reference Include="WebGrease">
+      <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Calendar.cs" />
+    <Compile Include="Controllers\ADController.cs" />
+    <Compile Include="Controllers\BirthdaysController.cs" />
+    <Compile Include="Controllers\CurrentJobsController.cs" />
+    <Compile Include="Controllers\DomainEditorController.cs" />
+    <Compile Include="Controllers\EditorCommentsController.cs" />
+    <Compile Include="Controllers\EmployeeCalendarController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\IncomeAndExpenseController.cs" />
+    <Compile Include="Controllers\StatisticsController.cs" />
+    <Compile Include="Controllers\StatusChangesController.cs" />
+    <Compile Include="Controllers\TicketReportLine.cs" />
+    <Compile Include="Controllers\WorkDaySheetController.cs" />
+    <Compile Include="ExtClasses.cs" />
+    <Compile Include="FileTree.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Invoices.cs" />
+    <Compile Include="Log.cs" />
+    <Compile Include="Models\WorkDaySheet\BreakUpByOffice.cs" />
+    <Compile Include="NoCache.cs" />
+    <Compile Include="ParticipantData.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SMS.cs" />
+    <Compile Include="Statistics.cs" />
+    <Compile Include="TraktatHandleError.cs" />
+    <Compile Include="WorkSheetTable.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\bootstrap-theme.css" />
+    <Content Include="Content\bootstrap-theme.min.css" />
+    <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\fixed-header-table.css" />
+    <Content Include="Content\incomeAndExpense.css" />
+    <Content Include="Content\themes\base\accordion.css" />
+    <Content Include="Content\themes\base\all.css" />
+    <Content Include="Content\themes\base\autocomplete.css" />
+    <Content Include="Content\themes\base\base.css" />
+    <Content Include="Content\themes\base\button.css" />
+    <Content Include="Content\themes\base\core.css" />
+    <Content Include="Content\themes\base\datepicker.css" />
+    <Content Include="Content\themes\base\dialog.css" />
+    <Content Include="Content\themes\base\draggable.css" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\themes\base\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_888888_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\themes\base\menu.css" />
+    <Content Include="Content\themes\base\progressbar.css" />
+    <Content Include="Content\themes\base\resizable.css" />
+    <Content Include="Content\themes\base\selectable.css" />
+    <Content Include="Content\themes\base\selectmenu.css" />
+    <Content Include="Content\themes\base\slider.css" />
+    <Content Include="Content\themes\base\sortable.css" />
+    <Content Include="Content\themes\base\spinner.css" />
+    <Content Include="Content\themes\base\tabs.css" />
+    <Content Include="Content\themes\base\theme.css" />
+    <Content Include="Content\themes\base\tooltip.css" />
+    <Content Include="Content\toastr.css" />
+    <Content Include="Content\toastr.min.css" />
+    <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Images\0star.gif" />
+    <Content Include="Images\1star.gif" />
+    <Content Include="Images\2star.gif" />
+    <Content Include="Images\3star.gif" />
+    <Content Include="Images\btm.png" />
+    <Content Include="Images\calendaricon.png" />
+    <Content Include="Images\chart-icon.jpg" />
+    <Content Include="Images\discard.png" />
+    <Content Include="Images\doctor_error.jpg" />
+    <Content Include="Images\done-small.png" />
+    <Content Include="Images\done.png" />
+    <Content Include="Images\error.gif" />
+    <Content Include="Images\Info.png" />
+    <Content Include="Images\king.png" />
+    <Content Include="Images\save.png" />
+    <Content Include="Images\trend-minus.gif" />
+    <Content Include="Images\non-confirmed-small.png" />
+    <Content Include="Images\non-confirmed.png" />
+    <Content Include="Images\phone.png" />
+    <Content Include="Images\trend-plus.gif" />
+    <Content Include="Images\search-button.gif" />
+    <Content Include="favicon.ico" />
+    <Content Include="Global.asax" />
+    <Content Include="ExchangeFiles\ExcelTemplates\template.xls" />
+    <Content Include="Content\toastr.scss" />
+    <Content Include="Content\toastr.less" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\bootstrap-theme.css.map" />
+    <Content Include="Content\bootstrap.css.map" />
+    <None Include="Properties\PublishProfiles\ticketmanager1_profile.pubxml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Properties\PublishProfiles\ticketmanagernew.pubxml" />
+    <None Include="Properties\PublishProfiles\ticketmanager_profile.pubxml" />
+    <Content Include="Images\warning.gif" />
+    <Content Include="Scripts\accounting-settings.js" />
+    <Content Include="Scripts\accounting.min.js" />
+    <Content Include="Scripts\ajaxService.js" />
+    <Content Include="Scripts\bindingHandlers.js" />
+    <Content Include="Scripts\bootbox.js" />
+    <Content Include="Scripts\bootbox.min.js" />
+    <Content Include="Scripts\bootstrap-paginator.min.js" />
+    <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\easyui.css" />
+    <Content Include="Scripts\Fixed-Header-Table-master\.gitignore" />
+    <Content Include="Scripts\Fixed-Header-Table-master\css\defaultTheme.css" />
+    <Content Include="Scripts\gviz-api.js" />
+    <Content Include="Scripts\Fixed-Header-Table-master\lib\jquery.mousewheel.js" />
+    <Content Include="Scripts\Fixed-Header-Table-master\README.md" />
+    <Content Include="Scripts\Fixed-Header-Table-master\css\.svn\entries" />
+    <Content Include="Images\animated_progress.gif" />
+    <Content Include="Images\delete.png" />
+    <Content Include="Images\edit.png" />
+    <Content Include="Images\file_add.png" />
+    <Content Include="Images\tools_icon.png" />
+    <Content Include="Images\TraktatLogo.jpg" />
+    <Content Include="Scripts\Fixed-Header-Table-master\jquery.fixedheadertable.js" />
+    <Content Include="Scripts\Fixed-Header-Table-master\jquery.fixedheadertable.min.js" />
+    <Content Include="Scripts\icon.css" />
+    <Content Include="Scripts\IncomeAndExpense\IncomeAndExpenseUtils.js" />
+    <Content Include="Scripts\IncomeAndExpense\Presenter\incomeAndExpense.js" />
+    <Content Include="Scripts\IncomeAndExpense\ViewModelDefinition.js" />
+    <Content Include="Scripts\JavaScript1.js" />
+    <Content Include="Scripts\jobsCalendar.js" />
+    <None Include="Scripts\jquery-2.1.4.intellisense.js" />
+    <Content Include="Scripts\jquery-2.1.4.js" />
+    <Content Include="Scripts\jquery-2.1.4.min.js" />
+    <Content Include="Scripts\jquery-latest.js" />
+    <Content Include="Scripts\jquery-ui-1.11.4.js" />
+    <Content Include="Scripts\jquery-ui-1.11.4.min.js" />
+    <Content Include="Scripts\jquery-ui-1.8.20.js" />
+    <Content Include="Scripts\jquery-ui-1.8.20.min.js" />
+    <Content Include="Scripts\jquery.dataTables.min.js" />
+    <Content Include="Scripts\jquery.easyui.min.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
+    <Content Include="Scripts\jquery-2.1.4.min.map" />
+    <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.validate.js" />
+    <Content Include="Scripts\jquery.validate.min.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\easyloader.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\jquery.easyui.min.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\jquery.min.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\locale\easyui-lang-af.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\locale\easyui-lang-ar.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\locale\easyui-lang-bg.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\locale\easyui-lang-ca.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\locale\easyui-lang-cs.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\locale\easyui-lang-cz.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\locale\easyui-lang-da.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\locale\easyui-lang-de.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\locale\easyui-lang-el.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\locale\easyui-lang-en.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\locale\easyui-lang-es.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\locale\easyui-lang-fr.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\locale\easyui-lang-it.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\locale\easyui-lang-jp.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\locale\easyui-lang-nl.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\locale\easyui-lang-pl.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\locale\easyui-lang-pt_BR.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\locale\easyui-lang-ru.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\locale\easyui-lang-sv_SE.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\locale\easyui-lang-tr.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\locale\easyui-lang-zh_CN.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\locale\easyui-lang-zh_TW.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.accordion.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.calendar.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.combo.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.combobox.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.combogrid.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.combotree.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.datagrid.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.datebox.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.datetimebox.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.dialog.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.draggable.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.droppable.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.form.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.layout.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.linkbutton.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.menu.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.menubutton.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.messager.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.numberbox.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.numberspinner.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.pagination.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.panel.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.parser.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.progressbar.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.propertygrid.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.resizable.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.searchbox.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.slider.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.spinner.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.splitbutton.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.tabs.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.timespinner.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.tooltip.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.tree.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.treegrid.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.validatebox.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\plugins\jquery.window.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\src\easyloader.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\src\jquery.accordion.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\src\jquery.calendar.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\src\jquery.combobox.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\src\jquery.datebox.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\src\jquery.draggable.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\src\jquery.droppable.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\src\jquery.form.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\src\jquery.linkbutton.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\src\jquery.menu.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\src\jquery.parser.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\src\jquery.progressbar.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\src\jquery.propertygrid.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\src\jquery.resizable.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\src\jquery.slider.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\src\jquery.tabs.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\src\jquery.window.js" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\accordion.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\calendar.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\combo.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\combobox.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\datagrid.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\datebox.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\dialog.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\easyui.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\images\accordion_arrows.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\images\blank.gif" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\images\calendar_arrows.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\images\combo_arrow.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\images\datagrid_icons.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\images\datebox_arrow.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\images\layout_arrows.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\images\linkbutton_bg.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\images\loading.gif" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\images\menu_arrows.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\images\messager_icons.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\images\pagination_icons.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\images\panel_tools.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\images\searchbox_button.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\images\slider_handle.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\images\spinner_arrows.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\images\tabs_icons.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\images\tree_icons.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\images\validatebox_warning.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\layout.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\linkbutton.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\menu.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\menubutton.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\messager.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\pagination.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\panel.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\progressbar.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\propertygrid.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\searchbox.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\slider.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\spinner.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\splitbutton.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\tabs.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\tooltip.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\tree.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\validatebox.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\window.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\icon.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\accordion.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\calendar.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\combo.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\combobox.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\datagrid.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\datebox.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\dialog.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\easyui.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\images\accordion_arrows.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\images\blank.gif" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\images\calendar_arrows.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\images\combo_arrow.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\images\datagrid_icons.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\images\datebox_arrow.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\images\layout_arrows.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\images\linkbutton_bg.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\images\loading.gif" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\images\menu_arrows.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\images\messager_icons.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\images\pagination_icons.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\images\panel_tools.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\images\searchbox_button.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\images\slider_handle.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\images\spinner_arrows.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\images\tabs_icons.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\images\tree_icons.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\images\validatebox_warning.png" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\layout.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\linkbutton.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\menu.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\menubutton.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\messager.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\pagination.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\panel.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\progressbar.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\propertygrid.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\searchbox.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\slider.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\spinner.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\splitbutton.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\tabs.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\tooltip.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\tree.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\validatebox.css" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\window.css" />
+    <Content Include="Scripts\knockout-2.1.0.js" />
+    <Content Include="Scripts\knockout-3.3.0.debug.js" />
+    <Content Include="Scripts\knockout-3.3.0.js" />
+    <Content Include="Scripts\knockout.mapping.js" />
+    <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\moment-with-langs.min.js" />
+    <Content Include="Scripts\moment.min.js" />
+    <Content Include="Scripts\MultiSelect\css\common.css" />
+    <Content Include="Scripts\MultiSelect\css\ui.multiselect.css" />
+    <Content Include="Scripts\MultiSelect\js\locale\ui-multiselect-de.js" />
+    <Content Include="Scripts\MultiSelect\js\locale\ui-multiselect-en.js" />
+    <Content Include="Scripts\MultiSelect\js\locale\ui-multiselect-es.js" />
+    <Content Include="Scripts\MultiSelect\js\locale\ui-multiselect-fr.js" />
+    <Content Include="Scripts\MultiSelect\js\locale\ui-multiselect-hu.js" />
+    <Content Include="Scripts\MultiSelect\js\locale\ui-multiselect-it.js" />
+    <Content Include="Scripts\MultiSelect\js\locale\ui-multiselect-ja.js" />
+    <Content Include="Scripts\MultiSelect\js\locale\ui-multiselect-ru.js" />
+    <Content Include="Scripts\MultiSelect\js\locale\ui.multiselect.pt-br.js" />
+    <Content Include="Scripts\MultiSelect\js\plugins\Localisation\jquery.localisation-min.js" />
+    <Content Include="Scripts\MultiSelect\js\plugins\Localisation\jquery.localisation-pack.js" />
+    <Content Include="Scripts\MultiSelect\js\plugins\Localisation\jquery.localisation.js" />
+    <Content Include="Scripts\MultiSelect\js\plugins\scrollTo\changes.txt" />
+    <Content Include="Scripts\MultiSelect\js\plugins\scrollTo\jquery.scrollTo-min.js" />
+    <Content Include="Scripts\MultiSelect\js\plugins\scrollTo\jquery.scrollTo.js" />
+    <Content Include="Scripts\MultiSelect\js\plugins\scrollTo\README.txt" />
+    <Content Include="Scripts\MultiSelect\js\ui.multiselect.js" />
+    <Content Include="Scripts\paginatedSearch.js" />
+    <Content Include="Scripts\print.jquery.js" />
+    <Content Include="Scripts\toastr.js" />
+    <Content Include="Scripts\toastr.min.js" />
+    <Content Include="Scripts\TreeView\changelog.txt" />
+    <Content Include="Scripts\TreeView\images\ajax-loader.gif" />
+    <Content Include="Scripts\TreeView\images\file.gif" />
+    <Content Include="Scripts\TreeView\images\folder-closed.gif" />
+    <Content Include="Scripts\TreeView\images\folder.gif" />
+    <Content Include="Scripts\TreeView\images\minus.gif" />
+    <Content Include="Scripts\TreeView\images\plus.gif" />
+    <Content Include="Scripts\TreeView\images\treeview-black-line.gif" />
+    <Content Include="Scripts\TreeView\images\treeview-black.gif" />
+    <Content Include="Scripts\TreeView\images\treeview-default-line.gif" />
+    <Content Include="Scripts\TreeView\images\treeview-default.gif" />
+    <Content Include="Scripts\TreeView\images\treeview-famfamfam-line.gif" />
+    <Content Include="Scripts\TreeView\images\treeview-famfamfam.gif" />
+    <Content Include="Scripts\TreeView\images\treeview-gray-line.gif" />
+    <Content Include="Scripts\TreeView\images\treeview-gray.gif" />
+    <Content Include="Scripts\TreeView\images\treeview-red-line.gif" />
+    <Content Include="Scripts\TreeView\images\treeview-red.gif" />
+    <Content Include="Scripts\TreeView\jquery.treeview.async.js" />
+    <Content Include="Scripts\TreeView\jquery.treeview.css" />
+    <Content Include="Scripts\TreeView\jquery.treeview.edit.js" />
+    <Content Include="Scripts\TreeView\jquery.treeview.js" />
+    <Content Include="Scripts\TreeView\jquery.treeview.sortable.js" />
+    <Content Include="Scripts\TreeView\lib\jquery.cookie.js" />
+    <Content Include="Scripts\TreeView\lib\jquery.js" />
+    <Content Include="Scripts\whowhere.js" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Content\Site.css" />
+    <Content Include="Scripts\_references.js" />
+    <Content Include="Images\accent.png" />
+    <Content Include="Images\bullet.png" />
+    <Content Include="Images\heroAccent.png" />
+    <Content Include="Images\orderedList0.png" />
+    <Content Include="Images\orderedList1.png" />
+    <Content Include="Images\orderedList2.png" />
+    <Content Include="Images\orderedList3.png" />
+    <Content Include="Images\orderedList4.png" />
+    <Content Include="Images\orderedList5.png" />
+    <Content Include="Images\orderedList6.png" />
+    <Content Include="Images\orderedList7.png" />
+    <Content Include="Images\orderedList8.png" />
+    <Content Include="Images\orderedList9.png" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Home\About.cshtml" />
+    <Content Include="Views\Home\Contact.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml">
+      <BrowseToURL>/Views/Shared/Error.cshtml</BrowseToURL>
+    </Content>
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Web.config" />
+    <Content Include="packages.config" />
+    <None Include="readme.txt" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Home\Create.cshtml" />
+    <Content Include="Views\Home\Edit.cshtml" />
+    <Content Include="Views\Home\UserUnidentified.cshtml" />
+    <Content Include="Views\Home\TicketSearchResults.cshtml" />
+    <Content Include="Views\Home\TicketDetails.cshtml" />
+    <Content Include="Views\Home\_TicketParticipantInfo.cshtml" />
+    <Content Include="Views\Home\_TicketComments.cshtml" />
+    <Content Include="Views\Home\ShowSubdivisionEmployees.cshtml" />
+    <Content Include="Views\Home\WhoWhere.cshtml" />
+    <Content Include="Views\Home\WhoWhereSearchResults.cshtml" />
+    <Content Include="Views\Home\Analyse.cshtml" />
+    <Content Include="Views\Job\Index.cshtml" />
+    <Content Include="Views\Job\Create.cshtml" />
+    <Content Include="Views\Job\Edit.cshtml" />
+    <Content Include="Views\Job\Delete.cshtml" />
+    <Content Include="Views\Job\JobParticipants.cshtml" />
+    <Content Include="Views\Job\Gantt.cshtml" />
+    <Content Include="Views\Job\JobsCalendar.cshtml" />
+    <Content Include="Views\Job\Details.cshtml" />
+    <Content Include="Views\Job\FileNodeList.cshtml" />
+    <Content Include="Scripts\TreeView\.gitignore" />
+    <Content Include="Scripts\TreeView\.project" />
+    <Content Include="Scripts\TreeView\README.md" />
+    <Content Include="Scripts\TreeView\todo" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\default\images\Thumbs.db" />
+    <Content Include="Scripts\JqueryEasyUI1.3.3\themes\metro\images\Thumbs.db" />
+    <Content Include="Views\Home\TicketType.cshtml" />
+    <Content Include="Views\Statistics\Index.cshtml" />
+    <Content Include="Views\Statistics\DisplaySimpleStatistics.cshtml" />
+    <Content Include="Views\Statistics\DisplaySimpleStatisticsByPeriods.cshtml" />
+    <Content Include="Views\Statistics\DisplayIndebtedCustomers.cshtml" />
+    <Content Include="Views\Statistics\JobInfo.cshtml" />
+    <Content Include="Views\Statistics\PaymentsInfo.cshtml" />
+    <Content Include="Views\Home\GetWorkSheetTable.cshtml" />
+    <Content Include="Views\TicketTypes\Index.cshtml" />
+    <Content Include="Views\TicketTypes\Details.cshtml" />
+    <Content Include="Views\TicketTypes\Create.cshtml" />
+    <Content Include="Views\TicketTypes\Edit.cshtml" />
+    <Content Include="Views\TicketTypes\Delete.cshtml" />
+    <Content Include="Views\Statistics\AttractionChannels.cshtml" />
+    <Content Include="Views\EmployeeCalendar\Index.cshtml" />
+    <Content Include="Views\EditorComments\Index.cshtml" />
+    <Content Include="Views\EditorComments\Details.cshtml" />
+    <Content Include="Views\Statistics\JobsByCustomer.cshtml" />
+    <Content Include="Views\Statistics\AttractionChannelsTbl.cshtml" />
+    <Content Include="Views\Statistics\DisplayStatisticsByOffice.cshtml" />
+    <Content Include="Views\StatusChanges\Index.cshtml" />
+    <Content Include="Views\DomainEditor\Index.cshtml" />
+    <Content Include="Views\IncomeAndExpense\Index.cshtml" />
+    <Content Include="Views\IncomeAndExpense\BalanceReport.cshtml" />
+    <Content Include="Views\IncomeAndExpense\TodayBalanceReport.cshtml" />
+    <Content Include="Views\CurrentJobs\Index.cshtml" />
+    <Content Include="Views\WorkDaySheet\Index.cshtml" />
+    <Content Include="Views\Birthdays\Index.cshtml" />
+    <Content Include="Views\WorkDaySheet\BreakupByOffice.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+    <Folder Include="ExchangeFiles\Temp\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BusinessLogic\BusinessLogic.csproj">
+      <Project>{4de07de9-8562-48a5-b07d-1599796f21de}</Project>
+      <Name>BusinessLogic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EMailNotification\EMailNotification.csproj">
+      <Project>{e41a68f8-0679-487a-a36e-5573b26b680e}</Project>
+      <Name>EMailNotification</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ExcelWrapper\ExcelWrapper.csproj">
+      <Project>{46a012a0-d9ed-43b6-8f8d-e134a4c0d42b}</Project>
+      <Name>ExcelWrapper</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Repository\Repository.csproj">
+      <Project>{c68b34fd-2206-47f5-9d4c-43bf1f95b2b1}</Project>
+      <Name>Repository</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TicketDataModel\TicketDataModel\TicketDataModel.csproj">
+      <Project>{eb752c0c-e27f-4a8c-b366-324c9823c2a6}</Project>
+      <Name>TicketDataModel</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>38004</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:53532/</IISUrl>
+          <NTLMAuthentication>True</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>http://vs09</CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>

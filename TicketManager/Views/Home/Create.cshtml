@@ -1,0 +1,209 @@
+﻿@model TicketDataModel.Ticket
+
+@{
+    ViewBag.Title = "Создание новой заявки";
+}
+<script>
+    var ShowSubdivisionEmployeesURL = '@Url.Content(Url.Action("ShowSubdivisionEmployees"))';
+    var GetTicketTypesURL = '@Url.Content(Url.Action("TicketType"))';
+</script>
+<div class="centerwrapper">
+    <h2>Создание новой заявки</h2>
+    <p>@TempData["message"]</p>
+    @using (Html.BeginForm("Create", "Home", FormMethod.Post, new { id = "form_create", enctype = "multipart/form-data" }))
+    {
+
+        @Html.ValidationSummary(true)
+
+        <fieldset>
+            <legend>Заявка</legend>
+
+            <div class="editor-label">
+                Автор
+            </div>
+            <div class="editor-field">
+                Подразделение: @Html.DropDownList("drDnAuthorOffice", ViewData["drDnAuthorOffice"] as SelectList)
+                Имя: 
+                <div id="authorDrDn" style="display: inline">
+                    @Html.DropDownListFor(model => model.AuthorID, 
+                    new SelectList((List<TicketDataModel.Translator>)ViewData["translatorlist"], "TranslatorID", "Name", (int)ViewData["CurrentUser"]))
+                </div>
+                @Html.ValidationMessageFor(model => model.AuthorID)
+            </div>
+
+            <div class="editor-label">
+                Ключевые слова
+            </div>
+            <div class="editor-field" id="ticket-title">
+                @Html.EditorFor(model => model.KeyWords)
+                @Html.ValidationMessageFor(model => model.KeyWords)
+            </div>
+
+            <div class="editor-label">
+                Текст
+            </div>
+            <div class="editor-field" id="ticket-text">
+                @Html.TextAreaFor(model => model.Text, new { style = "width:700px;height:300px" })
+                @Html.ValidationMessageFor(model => model.Text)
+            </div>
+
+            <div class="editor-label">
+                Какому подразделению адресовано
+            </div>
+            <div class="editor-field" id="assignee-office">
+                @Html.DropDownListFor(model => model.AssigneeOfficeID, new SelectList((List<TicketDataModel.Office>)ViewData["assigneeOfficeList"], "ID", "Name", (int)ViewData["CurrentAssigneeOffice"]))
+                @Html.ValidationMessageFor(model => model.AssigneeOfficeID)
+                @Html.CheckBox("chkSpecificEmployee")&nbsp;Адресовать конкретному сотруднику
+            </div>
+            <div class="editor-label invisible" id="assigneepicker">
+                Какому сотруднику адресовано
+            <div id="assignee_id_combo">
+                Выберите подразделение
+            </div>
+            </div>
+
+
+            <div class="editor-label">
+                Срочность / критичность
+            </div>
+            <div class="editor-field" id="critical-level">
+                @Html.DropDownListFor(model => model.LevelID, new SelectList((List<TicketDataModel.TicketLevel>)ViewData["Levels"], "ID", "Name", (int)ViewData["CurrentLevel"]))
+                @Html.ValidationMessageFor(model => model.LevelID)
+            </div>
+
+            <div class="editor-label">
+                Статус
+            </div>
+            <div class="editor-field" id="ticket-status">
+                @Html.DropDownListFor(model => model.StatusID, new SelectList((List<TicketDataModel.TicketStatus>)ViewData["Statuses"], "ID", "Name", (int)ViewData["CurrentStatus"]))
+                @Html.ValidationMessageFor(model => model.StatusID)
+            </div>
+
+            <div class="editor-label">
+                Тип
+            </div>
+            <div class="editor-field" id="ticket-type">
+                <div id="jobtypepicker">
+                    @Html.DropDownListFor(model => model.TypeID, ViewData["types"] as SelectList)
+                </div>
+                @Html.ValidationMessageFor(model => model.TypeID)
+            </div>
+            <div class="editor-field" id="uploads">
+                <input type="file" id="FileUpload1" name="FileUpload" /><br />
+                <img src="~/Images/file_add.png" width="32" height="32" onclick="addUpload(); return false;" />
+
+            </div>
+            <p>
+                <input type="submit" id="post-submit" value="Сохранить" />
+            </p>
+        </fieldset>
+    }
+</div>
+<div>
+    @Html.ActionLink("К списку заявок", "Index")
+</div>
+
+<div class="invisible">
+
+    <div id="tooltip-ticket-title">
+        <p>Это - ключевые слова, которые должны кратко, но точно характеризовать суть Вашей заявки</p>
+    </div>
+    <div id="tooltip-assignee-office">
+        <p>Заявка предназначена для этого подразделения. Это значит, что о ее создании и изменении будет уведомлен руководитель этого подразделения. Если выбрано конкретное лицо, которому адресована заявка, то оно также будет уведомлено о ее создании и изменении.</p>
+    </div>
+    <div id="tooltip-send-sms">
+        <p><strong>Тестируется!</strong> Руководителю подразделения адресата и сотруднику, которому поручена заявка, будет направлено сообщение с помощью смс.</p>
+        <p><strong>Внимание:</strong> Для отправки смс руководителю используется № мобильного телефона, указанный в <strong>справочнике исполнителей</strong> в контактных данных <strong>этого подразделения</strong>.</p>
+        <p>Смс конкретному сотруднику отправляется по № мобильного телефона, указанному в его контактных данных в справочнике исполнителей.</p>
+        <p>Если № мобильного телефона не указан, то смс отправлено не будет.</p>
+        <p>Уберите галочку, чтобы отменить отправку смс.</p>
+    </div>
+    <div id="tooltip-critical-level">
+        <p>Выберите уровень критичности заявки приблизительно по следующей шкале:</p>
+        <ul>
+            <li><strong>Критично</strong> - работа невозможна. </li>
+            <li><strong>Очень важно</strong> - работа практически невозможна или крайне затруднена</li>
+            <li><strong>Важно</strong> - крайне полезно для нормального хода работы, но пока справляемся и так</li>
+            <li><strong>Не очень важно</strong> - важно, но не влияет на работу существенно</li>
+            <li><strong>Не важно</strong> - неплохо по возможности сделать когда нибудь</li>
+        </ul>
+        <p class="red-emphasis">Внимание! О заявках первых трех уровней критичности адресат автоматически уведомляется по смс.</p>
+        <p><strong>Внимание:</strong> Для отправки смс руководителю используется № мобильного телефона, указанный в <strong>справочнике исполнителей</strong> в контактных данных <strong>этого подразделения</strong>.</p>
+        <p>Смс конкретному сотруднику отправляется по № мобильного телефона, указанному в его контактных данных в справочнике исполнителей.</p>
+        <p>Если № мобильного телефона не указан, то смс отправлено не будет.</p>
+    </div>
+    <div id="tooltip-ticket-status">
+        <p>При создании заявки она получает статус "<strong>новая</strong>". Это значит, что еще никто ею не занимался.</p>
+        <p>После просмотра заявки адресат может <strong>взять ее в работу сам или поручить сотруднику</strong> либо <strong>отклонить</strong></p>
+        <p>После завершения работы сотрудник, ответственный за заявку, отмечает ее как <strong>закрытую</strong>,</p>
+        <p>а автор (или его коллега из того же подразделения) <strong>подтверждает</strong>, что это действительно так.</p>
+    </div>
+    <div id="tooltip-add-comment-here">
+        <p>Вы можете добавить свой комментарий</p>
+    </div>
+    <div id="tooltip-uploads">
+        <p>выберите и приложите к заявке файл. Количество файлов не ограничено. Чтобы подгрузить несколько файлов, кликните на кнопку "плюс".</p>
+    </div>
+    <div id="tooltip-ticket-type">
+        <p>Выберите тип заявки, наиболее подходящий к Вашей ситуации. Если ничего не подходит, выберите "прочее"</p>
+    </div>
+</div>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).ready(function () {
+            $('#AssigneeOfficeID').change(function () {
+                $('#chkSpecificEmployee').attr('checked', false);
+                $('#assignee_id_combo').empty();
+                $('#assigneepicker').addClass('invisible');
+                var data = { CurrentAssigneeOffice: $('#AssigneeOfficeID').val() };
+                
+                $('#jobtypepicker').load(GetTicketTypesURL, data, ajaxErrorHandler);
+            });
+
+            $('#drDnAuthorOffice').change(function () {
+                 
+                showProgressAnimation();
+                var data = { SubdivisionCode: $('#drDnAuthorOffice').val().toString(), ID: 'AuthorID' };
+
+                $('#authorDrDn').load(ShowSubdivisionEmployeesURL, data, ajaxErrorHandler);
+                hideProgressAnimation();
+
+            });
+
+
+            setToolTip('ticket-title');
+            setToolTip('assignee-office');
+
+            setToolTip('critical-level');
+            setToolTip('ticket-status');
+            setToolTip('uploads');
+            setToolTip('ticket-type');
+
+
+            $('#chkSpecificEmployee').change(function () {
+                if ($('#chkSpecificEmployee').attr('checked')) {
+
+                    showProgressAnimation();
+                    var data = { SubdivisionCode: $('#AssigneeOfficeID').val().toString() };
+
+                    $('#assignee_id_combo').load(ShowSubdivisionEmployeesURL, data, ajaxErrorHandler);
+                    hideProgressAnimation();
+                    $('#assigneepicker').removeClass('invisible');
+                } else {
+                    $('#assignee_id_combo').empty();
+                    $('#assigneepicker').addClass('invisible');
+                }
+
+            });
+        });
+
+        function addUpload() {
+            var el = "<br/><input type='file' name = 'FileUpload'/>";
+            $('#uploads').find('input:file').last().after(el);
+        }
+    </script>
+     
+}
