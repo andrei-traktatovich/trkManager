@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using TicketDataModel;
 
 namespace TicketManager.Controllers
 {
@@ -13,13 +14,36 @@ namespace TicketManager.Controllers
         {
             var allOffices = Context.GetActiveOffices().ToIdNamePairs().ToList();
             var allStaffStatuses = Context.StaffStatuses.Select(x => new { id = x.ID, name = x.Name }).ToList();
-
+            /* 
+            ViewData["isHR"] = CurrentUser.CanEditEmployees(); 
+            ViewData["offices"] = GetOfficesDrDn(CurrentUser.OfficeID);
+            ViewData["activestatuses"] = GetActiveStatusesDrDn();
+            ViewData["popup-change-staff-statusId"] = GetStaffStatusesDrDn();
+            ViewData["popup-change-titleid"] = GetTitlesDrDn();
+            
+            */
             return Json(new
             {
                 offices = allOffices,
                 staffStatuses = allStaffStatuses
             },
             JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult FilterEmployees([System.Web.Http.FromUri] EmployeeFilterCriteria criteria)
+        {
+            Response.CacheControl = "no-cache";
+
+            ViewData["offices"] = Context.GetActiveOffices()
+                .OrderBy(x => x.Name)
+                .ToArray();
+
+            var list = this.GetStaffEmployees();
+
+            list = list.Filter(criteria)
+                        .OrderBy(x => x.Name);
+
+            return PartialView(list.OrderBy(x => x.Name));
         }
 
         [HttpPost]

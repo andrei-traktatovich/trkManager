@@ -32,13 +32,20 @@ namespace TicketDataModel
         {
             return x => new IdNamePair { Id = x.ID, Name = x.Name };
         }
+
+        public static Expression<Func<T, IdNamePair>> From<T>()
+            where T : IIdName
+        {
+            return x => new IdNamePair { Id = x.ID, Name = x.Name };
+        }
+            
     }
 
     public static class IdNameExtensions
     {
         public static IQueryable<IdNamePair> ToIdNamePairs(this IQueryable<IIdName> @this)
         {
-            return @this.Select(IdNamePair.From<IIdName);
+            return @this.Select(IdNamePair.From<IIdName>());
         }
     }
 }
