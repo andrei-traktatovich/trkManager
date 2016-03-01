@@ -41,14 +41,15 @@ describe('employeeCalendar.globals', function () {
     describe('when asked for something', function () {
 
         var _globalValues;
-
+         
         beforeEach(function(done) {
-            inject(function (globals) {
+            inject(function (globals, $timeout) {
                 globals.get('offices').then(function (data) {
-
                     _globalValues = data;
-                    done();
-                }, function () { done(); });
+                })
+                .finally(done);
+
+                $timeout.flush();
             });
         });
 
