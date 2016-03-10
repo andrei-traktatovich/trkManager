@@ -304,6 +304,8 @@
     <Content Include="Scripts\angular-touch.min.js" />
     <Content Include="Scripts\angular.js" />
     <Content Include="Scripts\angular.min.js" />
+    <Content Include="Scripts\app\services.spec\error-reporting\reportHTTPError.js" />
+    <Content Include="Scripts\app\services\error-reporting\reportHTTPError.js" />
     <Content Include="Scripts\bindingHandlers.js" />
     <Content Include="Scripts\bootbox.js" />
     <Content Include="Scripts\bootbox.min.js" />
