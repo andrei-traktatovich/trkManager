@@ -1,6 +1,6 @@
 ﻿(function (undefined) {
 
     angular.module("third-party", [])
-        .value("_", _);
+        .value("_", _); // lodash
 
 })();

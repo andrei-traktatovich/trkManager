@@ -304,10 +304,9 @@
     <Content Include="Scripts\angular-touch.min.js" />
     <Content Include="Scripts\angular.js" />
     <Content Include="Scripts\angular.min.js" />
-    <Content Include="Scripts\app\blocks.spec\error-handling\reportHTTPError.spec.js" />
-    <Content Include="Scripts\app\blocks\error-handling\error-handling.module.js" />
-    <Content Include="Scripts\app\blocks\error-handling\reportHTTPError.js" />
-    <Content Include="Scripts\app\services\globals.svc.js" />
+    <Content Include="Scripts\app\services.spec.js\arrayToLookup.spec.js" />
+    <Content Include="Scripts\app\services.spec.js\globals.svc.spec.js" />
+    <Content Include="Scripts\app\services\arrayToLookup.js" />
     <Content Include="Scripts\app\services\services.module.js" />
     <Content Include="Scripts\app\third-party\third-party.module.js" />
     <Content Include="Scripts\bindingHandlers.js" />
@@ -1082,6 +1081,7 @@
     <Content Include="Scripts\jasmine\boot.js" />
     <Content Include="Scripts\jasmine\console.js" />
     <Content Include="Scripts\jasmine\jasmine-html.js" />
+    <Content Include="Scripts\jasmine\jasmine-test.js" />
     <Content Include="Scripts\jasmine\jasmine.js" />
     <Content Include="Scripts\JavaScript1.js" />
     <Content Include="Scripts\jobsCalendar.js" />
@@ -1289,6 +1289,10 @@
     <Content Include="Scripts\knockout-3.3.0.debug.js" />
     <Content Include="Scripts\knockout-3.3.0.js" />
     <Content Include="Scripts\knockout.mapping.js" />
+    <Content Include="Scripts\lodash.core.js" />
+    <Content Include="Scripts\lodash.core.min.js" />
+    <Content Include="Scripts\lodash.js" />
+    <Content Include="Scripts\lodash.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Scripts\moment-with-langs.min.js" />
     <Content Include="Scripts\moment.min.js" />
@@ -1435,7 +1439,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="ExchangeFiles\Temp\" />
-    <Folder Include="Scripts\app\NewFolder1\" />
     <Folder Include="Views\Api\" />
   </ItemGroup>
   <ItemGroup>
