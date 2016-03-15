@@ -307,7 +307,6 @@
     <Content Include="Scripts\app\blocks.spec\error-handling\reportHTTPError.spec.js" />
     <Content Include="Scripts\app\blocks\error-handling\error-handling.module.js" />
     <Content Include="Scripts\app\blocks\error-handling\reportHTTPError.js" />
-    <Content Include="Scripts\app\services.spec\globals.svc.spec.js" />
     <Content Include="Scripts\app\services\globals.svc.js" />
     <Content Include="Scripts\app\services\services.module.js" />
     <Content Include="Scripts\app\third-party\third-party.module.js" />
@@ -1436,6 +1435,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="ExchangeFiles\Temp\" />
+    <Folder Include="Scripts\app\NewFolder1\" />
     <Folder Include="Views\Api\" />
   </ItemGroup>
   <ItemGroup>
