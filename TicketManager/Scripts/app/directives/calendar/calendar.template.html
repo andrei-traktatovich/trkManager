@@ -1,0 +1,44 @@
+﻿<div class="noselect calendar-container">
+
+    <div style="text-align:center; font-size: larger">
+        <btn-fast-backward ng-click="prevYear()" title="Прошлый год"></btn-fast-backward>
+        <btn-step-backward ng-click="prevMonth()" title="Прошлый месяц"></btn-step-backward>
+
+        {{ monthName(data.month) }} {{ data.year }}
+
+        <btn-step-forward ng-click="nextMonth()" title="Следующий месяц"></btn-step-forward>
+        <btn-fast-forward ng-click="nextYear()" title="Следующий год"></btn-fast-forward>
+
+        <btn-refresh class="pull-right btn-info" ng-click="now()" title="Следующий год"></btn-refresh>
+
+    </div>
+
+    <div>
+        <ul class="list-inline day-header">
+            <li ng-repeat="item in ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ','ВС' ]"
+                class="day-header-cell">
+                <a href="#" title="Кликните, чтобы выбрать каждый день"
+                   ng-click="toggleColumnSelect($index)">{{ item }}</a>
+
+
+            </li>
+        </ul>
+    </div>
+    <div ng-repeat="week in weeks" class="week" ng-keydown='toggleMultiSelect($event)' ng-keyup='toggleMultiSelect($event)'>
+        <ul class="list-inline" style="margin: 0; margin-left: {{ week.firstDay * 100 }}px">
+            <li ng-repeat="day in week.days" class="day"
+                ng-click="toggleSelected(day)"
+                ng-mousedown="beginSelect($event, day)"
+                ng-mouseup="endSelect()"
+                ng-mouseenter="continueSelect(day)"
+                ng-class="{ 'holiday' : day.isHoliday, 'day-selected': day.isSelected }">
+                <div class="day-number">
+                    {{ day.date.format("DD") }}
+                    <i class="fa fa-wrench" ng-show="day.modified"></i>
+                </div>
+                <br />
+                <div ng-transclude></div>
+            </li>
+        </ul>
+    </div>
+</div>

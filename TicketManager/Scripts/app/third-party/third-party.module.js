@@ -1,6 +1,5 @@
-﻿(function (undefined) {
+﻿(() => {
 
-    angular.module("third-party", [])
-        .value("_", _); // lodash
-
+    angular.module("third-party", []);
+ 
 })();

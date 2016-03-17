@@ -1,0 +1,89 @@
+﻿.day-header-cell a {
+  cursor: pointer;
+}
+
+.day-header-cell a:hover {
+  text-decoration: none;
+}
+
+.calendar-container {
+  width: 700px;
+  background-color: rgba(0, 150, 0, 0.1);
+  margin: 5px;
+}
+.week {
+  margin-bottom: 0;
+  padding:0;
+}
+
+.day {
+  height: 100px;  
+  width: 100px;
+  background-color: rgba(0,200,0,0.3);
+  border: 1px solid rgba(55,55,55, 0.1);
+  font-size: smaller;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+}
+.day-selected {
+  background-color: rgba(0,0,200,0.5) !important;
+  opacity: 0.5;
+}
+
+
+.day-header {
+  text-transform: uppercase;
+  background-color: rgba(0,0,0,0.1);
+  margin: 0px;
+  
+}
+.day-header-cell {
+  width: 100px;
+  text-align: center;
+  border: 1px solid rgba(55,55,55, 0.1);
+}
+.day-header-cell:hover {
+  background-color: rgba(0,0,0,.3);
+}
+.holiday {
+  background-color: rgba(255,0,0,0.3);
+}
+
+.day-number {
+  
+  color: rgba(255,255,100,0.8);
+  margin:0;
+  display: inline-block;
+  padding-left: 2px;
+  padding-right: 2px;
+  padding-bottom: 0;
+}
+
+/* TODO: these two things below should probably belong globally */
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none;   /* Chrome/Safari/Opera */
+  -khtml-user-select: none;    /* Konqueror */
+  -moz-user-select: none;      /* Firefox */
+  -ms-user-select: none;       /* IE/Edge */
+  user-select: none;           /* non-prefixed version, currently
+                                  not supported by any browser */
+}
+
+
+ul.two-column {
+    -moz-column-count: 2;
+    -moz-column-gap: 20px;
+    -webkit-column-count: 2;
+    -webkit-column-gap: 20px;
+    column-count: 2;
+    column-gap: 20px;
+}
+
+/* TODO: clarify: what is this ? */
+
+.selected {
+  background-color: rgba(0,0,200,.2);
+}

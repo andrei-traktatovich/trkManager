@@ -1,0 +1,8 @@
+﻿<ul style="list-style: none;" class="no-select">
+    <li ng-repeat="item in items" ng-class="{ 'selected': isItemSelected(item) }" class="list" ng-click="select(item)">
+        <div style="width: 20px; display: inline-block">
+            <span ng-show="isItemSelected(item)" class="glyphicon glyphicon-ok text-success"></span>
+        </div>
+        <span>{{ item[viewProp] }}</span>
+    </li>
+</ul>

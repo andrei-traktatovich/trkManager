@@ -1,0 +1,25 @@
+﻿/* TODO: prevent clashes by giving classes good names or specifying good selectors ! */
+
+.list {
+    cursor: pointer;
+    padding: 5px;
+    columns: 2;
+}
+
+.list:hover {
+        background-color: rgba(00,00,100, .1);
+    }
+
+.selected {
+    background-color: rgba(00,00,100, .3) !important;
+}
+
+.no-select {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Chrome/Safari/Opera */
+    -khtml-user-select: none; /* Konqueror */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE/Edge */
+    user-select: none; /* non-prefixed version, currently
+                                  not supported by any browser */
+}
