@@ -5,14 +5,28 @@
 
     function arrayToLookup(_) {
 
-        return (input) => {
+        return (input, insertWildCard) => {
+            insertWildCard = purgeBoolean(insertWildCard, true);
+
+            function purgeBoolean(value, defaultValue) {
+                if (value !== false && value !== true)
+                    return !!defaultValue
+                else
+                    return !defaultValue;
+            }
+
             if (Array.isArray(input)) {
                 extendWithLookup(input);
+                if (insertWildCard) {
+                    input.unshift({ id: -1, name: 'Все' });
+                }
             } else {
                 for (var propname in input) {
                     if (input.hasOwnProperty(propname) && Array.isArray(input[propname])) {
                         extendWithLookup(input[propname]);
-                        
+                        if (insertWildCard) {
+                            input[propname].unshift({ id: -1, name: 'Все' });
+                        }
                     }
                 }
             }

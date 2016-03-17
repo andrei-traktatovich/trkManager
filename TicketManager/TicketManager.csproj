@@ -324,6 +324,7 @@
     <Content Include="Scripts\app\infrastructure\infrastructure.module.js" />
     <Content Include="Scripts\app\infrastructure\log\console-logger.js" />
     <Content Include="Scripts\app\infrastructure\log\logging.module.js" />
+    <Content Include="Scripts\app\search-form\search-form.ctrl.js" />
     <Content Include="Scripts\app\services.spec.js\arrayToLookup.spec.js" />
     <Content Include="Scripts\app\services.spec.js\globals.svc.spec.js" />
     <Content Include="Scripts\app\services.spec.js\reportHttpError.spec.js" />
@@ -335,7 +336,7 @@
     <Content Include="Scripts\app\third-party\lodash.js" />
     <Content Include="Scripts\app\views\partials\employee-calendar.html" />
     <Content Include="Scripts\app\views\partials\employee-list.html" />
-    <Content Include="Scripts\app\views\partials\search-form.html" />
+    <Content Include="Scripts\app\search-form\search-form.html" />
     <Content Include="Scripts\app\views\main.html" />
     <Content Include="Scripts\bindingHandlers.js" />
     <Content Include="Scripts\bootbox.js" />
@@ -1467,6 +1468,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="ExchangeFiles\Temp\" />
+    <Folder Include="Scripts\app\employee-list\" />
     <Folder Include="Scripts\app\infrastructure.spec.js\" />
     <Folder Include="Views\Api\" />
   </ItemGroup>
