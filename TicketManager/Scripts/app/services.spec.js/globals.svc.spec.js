@@ -2,6 +2,7 @@
 /// <reference path="../../lodash.min.js" />
 
 /// <reference path="../third-party/third-party.module.js" />
+/// <reference path="../third-party/lodash.js" />
 
 
 /// <reference path="../infrastructure/constants/constants.module.js" />
