@@ -304,9 +304,19 @@
     <Content Include="Scripts\angular-touch.min.js" />
     <Content Include="Scripts\angular.js" />
     <Content Include="Scripts\angular.min.js" />
+    <Content Include="Scripts\app\infrastructure\config\config.module.js" />
+    <Content Include="Scripts\app\infrastructure\constants\constants.module.js" />
+    <Content Include="Scripts\app\infrastructure\error-reporting\app-error.js" />
+    <Content Include="Scripts\app\infrastructure\error-reporting\error-reporting.module.js" />
+    <Content Include="Scripts\app\infrastructure\error-reporting\reportError.js" />
+    <Content Include="Scripts\app\infrastructure\infrastructure.module.js" />
+    <Content Include="Scripts\app\infrastructure\log\console-logger.js" />
+    <Content Include="Scripts\app\infrastructure\log\log.module.js" />
     <Content Include="Scripts\app\services.spec.js\arrayToLookup.spec.js" />
     <Content Include="Scripts\app\services.spec.js\globals.svc.spec.js" />
+    <Content Include="Scripts\app\services.spec.js\reportHttpError.spec.js" />
     <Content Include="Scripts\app\services\arrayToLookup.js" />
+    <Content Include="Scripts\app\infrastructure\error-reporting\reportHttpError.js" />
     <Content Include="Scripts\app\services\services.module.js" />
     <Content Include="Scripts\app\third-party\third-party.module.js" />
     <Content Include="Scripts\bindingHandlers.js" />
@@ -1439,6 +1449,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="ExchangeFiles\Temp\" />
+    <Folder Include="Scripts\app\infrastructure.spec.js\" />
     <Folder Include="Views\Api\" />
   </ItemGroup>
   <ItemGroup>
