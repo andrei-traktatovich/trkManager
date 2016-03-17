@@ -7,13 +7,10 @@
 
         return (input) => {
             if (Array.isArray(input)) {
-                console.log('this is an array');
                 extendWithLookup(input);
             } else {
-                console.log('this is not an array');
                 for (var propname in input) {
                     if (input.hasOwnProperty(propname) && Array.isArray(input[propname])) {
-                        console.log('making ' + propname + ' a lookup');
                         extendWithLookup(input[propname]);
                         
                     }

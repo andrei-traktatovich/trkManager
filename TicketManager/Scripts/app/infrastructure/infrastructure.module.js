@@ -1,7 +1,8 @@
 ﻿(() => {
     angular.module("infrastructure", [
         "error-reporting",
-        "log",
-        "constants"
+        "logging",
+        "constants",
+        "config"
     ]);
 })();

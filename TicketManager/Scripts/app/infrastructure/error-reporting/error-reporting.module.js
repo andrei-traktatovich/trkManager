@@ -1,7 +1,7 @@
 ﻿(() => {
 
     angular.module("error-reporting", [
-        "log",
+        "logging",
         "constants",
         "config"
     ]);

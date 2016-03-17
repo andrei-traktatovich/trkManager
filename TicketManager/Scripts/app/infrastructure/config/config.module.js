@@ -4,7 +4,7 @@
             DEBUG: true,
             urls: {
                 // put all app urls here !!! 
-            
+                APPGLOBALS: "/api/globals"
             }
         });
 })();

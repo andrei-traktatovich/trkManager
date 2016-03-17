@@ -7,6 +7,7 @@
     function reportHttpError(reportError, appError, constants) {
 
         return (msg) => ((err) => {
+
             const error = appError(msg, makeErrorText(err), err, constants.appErrorTypes.HTTP);
             reportError(error);
         });

@@ -1,4 +1,7 @@
 ﻿(() => {
-    angular.module("services", ["third-party" ]);
+    angular.module("services", [
+        "third-party",
+        "infrastructure"
+    ]);
 
 })();

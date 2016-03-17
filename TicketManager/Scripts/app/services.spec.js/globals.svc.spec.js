@@ -2,28 +2,39 @@
 /// <reference path="../../lodash.min.js" />
 
 /// <reference path="../third-party/third-party.module.js" />
+
+
+/// <reference path="../infrastructure/constants/constants.module.js" />
+/// <reference path="../infrastructure/config/config.module.js" />
+/// <reference path="../infrastructure/log/logging.module.js" />
+/// <reference path="../infrastructure/log/console-logger.js" />
+
+/// <reference path="../infrastructure/error-reporting/error-reporting.module.js" />
+/// <reference path="../infrastructure/error-reporting/app-error.js" />
+/// <reference path="../infrastructure/error-reporting/reportError.js" />
+/// <reference path="../infrastructure/error-reporting/reportHttpError.js" />
+
+/// <reference path="../infrastructure/infrastructure.module.js" />
+
 /// <reference path="../services/services.module.js" />
+
 /// <reference path="../services/arrayToLookup.js" />
 
 (() => {
     "use strict";
 
     angular.module("services")
-        .factory("reportHttpError", function() { return () => {}; })
-        .factory("globals", globals)
-        .factory("toLookupList", () => { });
-        
-     
+        .factory("globals", globals);
 
-    function globals($http, reportHttpError, arrayToLookup) {
-        
-        const globalsUrl = "/api/globals";
+    function globals($http, reportHttpError, arrayToLookup, config) {
+
+        const globalsUrl = config.urls.APPGLOBALS;
         
         
         return {
             load() {
                 return $http.get(globalsUrl).then((data) => {
-                    
+
                     this.profile = data.data.profile;
                     this.lookups = data.data.lookups;
                     arrayToLookup(this.lookups);
@@ -45,9 +56,9 @@ describe("globals", () => {
     beforeEach(() => {
         module("services");
     });
-
+    var httpHandler;
     beforeEach(inject(($httpBackend) => {
-        $httpBackend.whenGET(globalsUrl).respond(200, { profile: {}, lookups: { "smth": [] } }, {});
+        httpHandler = $httpBackend.whenGET(globalsUrl).respond(200, { profile: {}, lookups: { "smth": [] } }, {});
         httpBackend = $httpBackend;
     }));
 
@@ -65,7 +76,25 @@ describe("globals", () => {
             });
         });
 
-        xit("reports error if request fails");
+        it("reports error if request fails", (done) => {
+            inject((globals, $rootScope, constants) => {
+
+                var spy = jasmine.createSpy("root scope handler");
+                
+                $rootScope.$on(constants.appEvents.APPERROREVENT, spy);
+
+                httpHandler.respond(404, "something went wrong");
+
+                httpBackend.expectGET(globalsUrl);
+
+                globals.load().finally(() => {
+                    expect(spy).toHaveBeenCalled();
+                    done();
+                });
+
+                httpBackend.flush();
+            });
+        });
 
     });
 
